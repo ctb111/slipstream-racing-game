@@ -1,0 +1,56 @@
+Car models (assets/cars/*.glb). Licences checked against the Sketchfab API
+(api.sketchfab.com/v3/models/<uid>) and the glTF asset.extras / license.txt
+shipped with each copy. None were downloaded from Sketchfab directly (no
+account): each came from a public GitHub repo that mirrors the Sketchfab export.
+All were decompressed / converted for Godot with glTF-Transform (Draco and
+quantization removed; WebP textures converted to PNG; some meshes simplified).
+
+porsche930.glb
+  This work is based on "FREE 1975 Porsche 911 (930) Turbo"
+  (https://sketchfab.com/3d-models/free-1975-porsche-911-930-turbo-8568d9d14a994b9cae59499f0dbed21e)
+  by Lionsharp Studios (https://sketchfab.com/lionsharp), licensed under CC BY 4.0
+  (http://creativecommons.org/licenses/by/4.0/). Obtained from https://github.com/pmndrs/examples.
+  Changes: Draco/quantization decoded.
+
+bmw_e30_m3.glb
+  This work is based on "[FREE] BMW M3 E30"
+  (https://sketchfab.com/3d-models/free-bmw-m3-e30-ac3c7013434e403e8faff87948caf422)
+  by Martin Trafas (https://sketchfab.com/TinoD2; formerly "Bexxie", the name embedded in the
+  glTF), licensed under CC BY 4.0
+  (http://creativecommons.org/licenses/by/4.0/).
+  Obtained from https://github.com/FreadSt/bmw-gsap-landing (public/models/bmw-e30-m3.glb).
+  Changes: Draco/quantization decoded.
+
+datsun_240k.glb
+  This work is based on "(FREE) 1972 Datsun 240k GT"
+  (https://sketchfab.com/3d-models/free-1972-datsun-240k-gt-b2303a552b444e5b8637fdf5169b41cb)
+  by Lionsharp Studios / Karol Miklas (https://sketchfab.com/lionsharp), licensed under
+  CC BY-SA 4.0 (http://creativecommons.org/licenses/by-sa/4.0/).
+  Obtained from https://github.com/pmndrs/examples (examples/stage-presets-gltfjsx/src/datsun-transformed.glb).
+  Changes: Draco decoded, simplified to ~117k triangles, WebP textures converted to PNG.
+  Share-alike: this modified model is likewise available under CC BY-SA 4.0.
+
+toyota_ae86.glb
+  This work is based on "Japanese Touge Racer - Initial D spec"
+  (https://sketchfab.com/3d-models/japanese-touge-racer-initial-d-spec-59a0eaaa2af144b2956957e7032d0221,
+  since renamed "Tiara GT '83 Tuned - Low poly model") by Daniel Zhabotinsky
+  (https://sketchfab.com/DanielZhabotinsky), licensed under CC BY 4.0
+  (http://creativecommons.org/licenses/by/4.0/).
+  Obtained from https://github.com/kvikmynd639/initial-d-car-game (public/models/trueno.glb). Unmodified.
+
+mazda_rx7_fc.glb
+  This work is based on "Mazda RX-7 FC"
+  (https://sketchfab.com/3d-models/mazda-rx-7-fc-8ac0df459f514950ab83ac37109a06ab)
+  by Lexyc16 (https://sketchfab.com/Lexyc16), licensed under CC BY 4.0
+  (http://creativecommons.org/licenses/by/4.0/).
+  Obtained from https://github.com/TrinhNgoc/rx7 (public/models/car). Changes: packed to .glb.
+
+ferrari_f40.glb
+  This work is based on "Ferrari f40"
+  (https://sketchfab.com/3d-models/ferrari-f40-52a66c41cfcd4f999fb1b1c49bf24d70)
+  by Black Snow (https://sketchfab.com/BlackSnow02), licensed under CC BY 4.0
+  (http://creativecommons.org/licenses/by/4.0/).
+  Obtained from https://github.com/DaniilDem/F40-Three.js (models/ferrari_f40).
+  Changes: packed to .glb, welded and simplified to ~140k triangles.
+
+Car makes and model names are trademarks of their respective owners. This is an independent fan project, not affiliated with or endorsed by them.

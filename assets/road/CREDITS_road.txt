@@ -1,0 +1,6 @@
+Road / kerb / gravel / verge textures (assets/road): CC0, Poly Haven, https://polyhaven.com
+  asphalt_02        https://polyhaven.com/a/asphalt_02        (second tarmac scan, blended to break tiling)
+  floor_pebbles_01  https://polyhaven.com/a/floor_pebbles_01  (coarse pebbles blended into gravel traps)
+  gravelly_sand     https://polyhaven.com/a/gravelly_sand     (dirt verge between tarmac and grass)
+Gravel trap base also uses assets/textures/gravel_floor (Poly Haven, CC0).
+road_noise.png: procedurally generated for this project (FastNoiseLite), no licence restrictions.

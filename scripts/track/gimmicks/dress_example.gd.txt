@@ -1,0 +1,10 @@
+# Template for scripts/track/gimmicks/dress_<track_id>.gd
+extends RefCounted
+
+static func dress(c: Node3D) -> void:
+	var rng := Gx.rng(c, "dress")
+	# Fans with flares on the outside of the three sharpest corners:
+	for corner in Gx.corners(c).slice(0, 3):
+		var side := -float(corner.turn) # outside of the turn
+		if ResourceLoader.exists("res://scripts/track/gimmicks/gx_fans.gd"):
+			GxFans.place(c, Gx.frame(c, corner.along, side, 9.0), {count = 30, flares = true})

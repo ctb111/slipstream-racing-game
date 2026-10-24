@@ -1,0 +1,57 @@
+Vegetation assets (trees, bushes, grass, flowers, rocks)
+========================================================
+All sources below are CC0 1.0 (public domain). Credit given anyway.
+
+Poly Haven (https://polyhaven.com, CC0) - 3D scans/models, rendered to card
+textures with assets/vegetation/_bake/bake_models.gd:
+  grass_medium_01, grass_medium_02       -> grass/grass_atlas.png (clumps, dry grass)
+  dandelion_01, celandine_01             -> grass/grass_atlas.png (flowers)
+  shrub_03, weed_plant_02, nettle_plant  -> grass/grass_atlas.png (weeds)
+  fern_02                                -> grass/grass_atlas.png (forest floor)
+  fir_sapling, pine_sapling_small        -> trees/conifer_atlas.png (+ _normal), branch
+                                            sprays seen from the side and from above
+  pine_bark (texture)                    -> trees/bark_conifer.jpg (right half)
+  rock_07, rock_09, stone_01             -> rocks/*.glb (decimated with gltf-transform
+                                            simplify to ~2.2k tris, textures 1k)
+  Authors: as listed on each asset's page, https://polyhaven.com/a/<id>.
+
+ambientCG (https://ambientcg.com, CC0) - photo scans:
+  LeafSet024, LeafSet009, LeafSet016     -> trees/leaf_atlas.png (+ _normal), leaf
+                                            sprays composed by _bake/build_atlases.py
+  Bark014 (spruce)                       -> trees/bark_conifer.jpg (left half)
+  Bark005 (beech, desaturated)           -> trees/bark_broadleaf.jpg (left half)
+
+Generated here:
+  Birch bark (trees/bark_broadleaf.jpg right half) - procedural (build_atlases.py).
+
+Pipeline: bake_models.gd (Godot, run via tools/bgrun.sh "" -s ...) renders the
+Poly Haven models orthographically into albedo + normal PNGs; build_atlases.py
+(Python + Pillow/numpy) packs them into atlases with push-pull colour dilation
+so mipmaps don't fringe. Trees themselves are grown at load time from these
+atlases in scripts/world/vegetation.gd (own code, no third-party models):
+branch skeletons per species and age class (Norway spruce whorls with folded
+fronds, Scots pine limbs with needle tufts, beech/oak/birch scaffold limbs
+with leaf clumps), each emitted as a near mesh and a matching far LOD, with
+per-vertex wind weights for shaders/veg_tree.gdshader.
+_bake/tree_gallery.tscn (dev tool) lines up all variants for screenshots.
+(build_atlases.py expects the downloaded sources in its own folder layout:
+ bake1/ bake2/ acg/<id>/ ph_tex/ - see the paths at the top of the script.)
+
+2026-10 tree models (replace the grown trees in the forest and the theme trees):
+  trees/models/<species>_<age>_near.res / _far.res, baked by tools/trees/gen_trees.py with Blender's
+  Sapling Tree Gen (GPL tool, output is ours): Weber-Penn branch skeletons -> bark tubes with root
+  flare + buried base, alpha-tested spray cards from leaf_atlas / conifer_atlas (fir fronds cut as
+  wedges from the fir_sapling top views, pine tufts as crossed cards), crown normals + AO baked per
+  vertex, wind weights (branch weight along each limb from its parent, per-limb phase, leaf
+  flutter) in the same layout as before. Far LOD = same skeleton, trunk + main limbs, every 6th card
+  enlarged. Regenerate: see the header of tools/trees/gen_trees.py (needs the sapling_tree_gen
+  folder from the extension zip).
+
+2026-10-19 dense foliage (trees3): trees/leaf_clumps.png (+_normal) and trees/conifer_clumps.png
+  (+_normal), built by tools/trees/build_clumps.py. Leaf masses composed from hundreds of single
+  leaves cut out of the ambientCG CC0 scans LeafSet024 (beech), LeafSet016 (oak), LeafSet009
+  (birch) - https://ambientcg.com/view?id=<id> - plus twig sprays (rows 2-3) as in leaf_atlas.
+  Conifer masses re-stamped from conifer_atlas (Poly Haven CC0 fir_sapling / pine_sapling_small).
+  The baked models now carry a crown "clump shell" (gen_trees.py clump_shell): leaf-mass cards
+  grown from the foliage points, which is also the whole far LOD. Foliage UVs sit at u + 2 so
+  veg_tree.gdshader reads the clump atlas. Undergrowth bushes: Vegetation.bush_dense.

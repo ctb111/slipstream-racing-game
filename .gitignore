@@ -1,0 +1,20 @@
+# Godot
+.godot/
+/export/
+*.translation
+
+# Raw asset sources (not used by the game; .gdignore'd)
+/assets/facades_src/
+/assets/cars/src/
+/assets/people/src/
+/assets/industrial/src/
+/assets/gimmicks/src/
+/assets/trackside/src/*
+!/assets/trackside/src/fonts/
+
+# Tooling / OS
+.claude/
+.ruff_cache/
+__pycache__/
+*.pyc
+.DS_Store

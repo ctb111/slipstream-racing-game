@@ -1,0 +1,51 @@
+People / crowd figures — sources and licences
+=============================================
+
+All human figures (spectators, grandstand crowd, photographers, pit crew,
+bystanders, flag marshals) are generated from MakeHuman assets, which are
+released under CC0 1.0 (public domain dedication). No attribution is legally
+required; we credit the authors anyway.
+
+Base humans, skins, eyes, eyebrows, hair, clothes and shoes
+  "makehuman_system_assets" asset pack, MakeHuman Community — CC0 1.0
+  https://static.makehumancommunity.org/assets/assetpacks/makehuman_system_assets.html
+  (download: https://files.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip)
+  Copyright holders at the time of the CC0 release (Sept 2020): Data Collection AB,
+  Joel Palmius, Jonas Hauquier. Assets used:
+    base mesh + macro targets (gender, age, muscle, weight, height, proportions)
+    skins:   middleage_caucasian_male, young_caucasian_male, young_caucasian_male2,
+             young_caucasian_female, middleage_caucasian_female
+    clothes: male_casualsuit01, male_casualsuit05, male_worksuit01,
+             female_casualsuit01, female_elegantsuit01
+    shoes:   shoes01, shoes02, shoes03, shoes05, shoes06
+    hair:    short01, short02, short04, ponytail01, bob02
+    eyebrows: eyebrow001, eyebrow002, eyebrow010; eyes: low-poly
+
+Tooling (not redistributed, used to build the assets)
+  MPFB 2.0.17 (MakeHuman plugin for Blender) — GPL-3.0-or-later, Joel Palmius et al.
+  https://extensions.blender.org/add-ons/mpfb/  (its output is not covered by the GPL;
+  the character data comes from the CC0 assets above)
+  Blender 5.2 — GPL; Mixamo-compatible skeleton from MPFB's built-in "mixamo" rig.
+
+Files
+  assets/people/src/*_{hi,mid,lo}.glb   rigged humans exported by bake/make_humans.py
+                                        (Blender Decimate for the mid/lo LODs; .gdignore'd)
+  assets/people/meshes/*.res            posed static meshes baked by bake/bake_people.gd
+  assets/people/people_atlas.png        texture atlas packed from the CC0 textures
+
+Rebuild
+  1. Blender 5.2 with MPFB installed into a private profile, and the CC0 system asset
+     pack unzipped into MPFB's user data directory:
+       BLENDER_USER_RESOURCES=<profile> Blender -b --command extension install-file -r user_default -e add-on-mpfb-v2.0.17.zip
+       unzip makehuman_system_assets_cc0.zip -d <profile>/extensions/.user/user_default/mpfb/data
+  2. BLENDER_USER_RESOURCES=<profile> Blender -b --python assets/people/bake/make_humans.py -- <out dir>
+     then copy <out>/*_hi.glb (textures resized to 1024 with
+     `npx @gltf-transform/cli resize --width 1024 --height 1024`) and *_mid/_lo.glb into assets/people/src.
+  3. godot --headless --path . --script res://assets/people/bake/bake_people.gd
+  4. godot --headless --path . --import
+  Preview: tools/bgrun.sh res://assets/people/bake/preview.tscn -- --out=<png> [--lod=mid|lo]
+           [--crowd=80 --nolineup] [--stand=full --nolineup --cam=x,y,z,tx,ty,tz]
+
+Evaluated and rejected
+  three.js examples Michelle.glb (Mixamo) and readyplayer.me.glb — too stylised/cartoony.
+  Lunarsong/character-models (MakeHuman-based) — "all rights reserved", not usable.

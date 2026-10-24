@@ -1,0 +1,2 @@
+Theme textures (1k JPG, diffuse + OpenGL normal), all CC0 from Poly Haven, https://polyhaven.com
+  coast_sand_01, cliff_side, plastered_wall, clay_roof_tiles, stone_wall, farm_soil, cobblestone_floor_08

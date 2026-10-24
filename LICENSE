@@ -1,0 +1,33 @@
+MIT License
+
+Copyright (c) 2026 Catalin
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Third-party assets (3D models, textures, photos, sounds, fonts, HDRIs) are
+NOT covered by the MIT license above. Each keeps its own license (CC0,
+CC BY, CC BY-SA, SIL OFL, Apache 2.0 or public domain), listed with author
+and source in CREDITS.md and in the CREDITS*.txt files under assets/.
+Files derived from CC BY-SA sources stay under CC BY-SA 4.0, not MIT:
+assets/cars/datsun_240k.glb (and its textures), assets/gimmicks/gx_graffiti_walls.png
+and assets/gimmicks/gx_billboard.png.
+Car makes and model names are trademarks of their respective owners; this is
+an independent fan project, not affiliated with or endorsed by them.

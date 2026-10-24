@@ -1,0 +1,24 @@
+PBR material sets used by scripts/world/materials.gd (Mats)
+============================================================
+All sets are CC0 1.0 (public domain) - no attribution required, credited anyway.
+Files per set: <set>_diff.jpg (albedo), <set>_nor_gl.jpg (OpenGL normal),
+<set>_arm.jpg (R = ambient occlusion, G = roughness, B = metalness), 1024 px.
+For ambientCG sets the ARM map was packed locally from the AO / Roughness /
+Metalness maps (missing channels: AO = 1, metal = 0).
+
+Poly Haven (https://polyhaven.com, CC0)
+  concrete     <- concrete_wall_008       https://polyhaven.com/a/concrete_wall_008
+  plaster      <- painted_plaster_wall    https://polyhaven.com/a/painted_plaster_wall
+  brick        <- red_brick_03            https://polyhaven.com/a/red_brick_03
+  roof_tiles   <- clay_roof_tiles_02      https://polyhaven.com/a/clay_roof_tiles_02
+  slate        <- roof_slates_03          https://polyhaven.com/a/roof_slates_03
+  corrugated   <- corrugated_iron_02      https://polyhaven.com/a/corrugated_iron_02
+  rusty_metal  <- rusty_metal_02          https://polyhaven.com/a/rusty_metal_02
+  wood         <- weathered_planks        https://polyhaven.com/a/weathered_planks
+
+ambientCG (https://ambientcg.com, CC0)
+  painted_metal <- Metal016               https://ambientcg.com/view?id=Metal016
+  steel         <- Metal038               https://ambientcg.com/view?id=Metal038
+  canvas        <- Fabric030              https://ambientcg.com/view?id=Fabric030
+  rubber        <- Rubber004              https://ambientcg.com/view?id=Rubber004
+  stone        <- large_sandstone_blocks  https://polyhaven.com/a/large_sandstone_blocks  (Poly Haven, CC0)

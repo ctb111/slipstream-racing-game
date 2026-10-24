@@ -1,0 +1,150 @@
+# Cars
+
+Lionsharp Studios — "FREE 1975 Porsche 911 (930) Turbo" — CC BY 4.0 (modified)
+
+Martin Trafas (TinoD2) — "[FREE] BMW M3 E30" — CC BY 4.0 (modified)
+
+Lionsharp Studios (Karol Miklas) — "(FREE) 1972 Datsun 240k GT" — CC BY-SA 4.0 (modified, shared alike)
+
+Daniel Zhabotinsky — "Japanese Touge Racer - Initial D spec" (Toyota AE86) — CC BY 4.0
+
+Lexyc16 — "Mazda RX-7 FC" — CC BY 4.0 (modified)
+
+Black Snow — "Ferrari f40" — CC BY 4.0 (modified)
+
+Car makes and model names are trademarks of their respective owners.
+This is an independent fan project, not affiliated with or endorsed by them.
+
+# Vehicles & Wildlife
+
+Bwinji Shamutete (MangyMedusa) — "Seagull" — CC BY 4.0 (modified)
+
+zixisun02 — "Crow" — CC BY 4.0 (modified)
+
+velvel — "pigeon - 3dModel - Free" — CC BY 4.0 (modified)
+
+IronEqual — "Bird from Poly by Google" (archive of Google Poly "Bird") — CC BY 4.0 (modified)
+
+BillyChen — "504班-02號-陳泓光-阿嬤養的貓" (ginger cat) — CC BY 4.0 (modified)
+
+Josué Boisvert — "Cow" — CC BY 4.0 (modified)
+
+rocket95 — "cow" — CC BY 4.0 (modified)
+
+hendrikReyneke — "Sheep" — CC BY 4.0 (modified)
+
+Nioma van der Steen — "Low Poly Horse" — CC BY 4.0 (modified)
+
+Eseyeyo — "Walk Deer" — CC BY 4.0 (modified)
+
+HonDaMcd — "狗狗走路" (labrador) — CC BY 4.0 (modified)
+
+Andy Andy (rootrainz4) — "Dog" — CC BY 4.0 (modified)
+
+All from Sketchfab via the Objaverse dataset (Allen Institute for AI). Animation is procedural.
+
+# People
+
+MakeHuman Community (Data Collection AB, Joel Palmius, Jonas Hauquier) — MakeHuman system assets — CC0
+
+# Vegetation
+
+Poly Haven (Rob Tuytel, Rico Cilliers, Dimitrios Savva, Jenelle van Heerden, Dario Barresi) — grass, flowers, ferns,
+saplings, bark, rocks — CC0
+
+ambientCG — LeafSet024, LeafSet016, LeafSet009, Bark014, Bark005 — CC0
+
+Trees grown with Sapling Tree Gen (Andrew Hale, Aaron Buchler); the generated meshes are our own work.
+
+# Textures & Materials
+
+Poly Haven (Rob Tuytel, Dario Barresi, Charlotte Baglioni, Amal Kumar, Dimitrios Savva, Jenelle van Heerden,
+Sergej Majboroda, James Ray Cock, Matterfield) — road, ground, terrain, wall and roof textures — CC0
+
+ambientCG — Metal016, Metal038, Fabric030, Rubber004, ThatchedRoof001A, Facade018A, Graffiti Set 001 — CC0
+
+Poly Haven (James Ray Cock, Jurita Burger, Jorge Camacho, Serhii Khromov, Kuutti Siitonen, MP, Slinc,
+Maximilian Schuster, Rahul Chaudhary, PierreB3D, Amal Kumar, GurJas Studios, Monsta3D, Mutanzom3D, Josh Dean,
+Ulan Cabanilla, Sebastian Platen, Sean Buckley, Alex Weber, Rico Cilliers, Hank Kaamura) — props and models — CC0
+
+# Photos (Facades, Graffiti, Billboards)
+
+OpenStreetMap wiki Texture Library — wall, window and door photos — public domain
+
+Jernej Furman — "Window with green shutters" and two more window photos — CC BY 2.0 (modified)
+
+decar66 — "This charming door" — CC BY 2.0 (modified)
+
+Spielvogel — "Closed bakery in Bad Kreuznach" — CC0
+
+Dguendel — "Enns, Haus Kirchengasse 2, Tür und Schaufenster" — CC BY 4.0 (modified)
+
+AnRo0002 — "20110625Cafe Walz Neulussheim2" — CC0
+
+Twice25 & Rinina25 — "DSCF8682" — CC BY 2.5 (modified)
+
+Hannes Grobe — "Graffiti-hannover" 03, 06-11, 14-17 — CC BY-SA 4.0 (modified)
+
+Ermell — "Hallstadt Graffiti" — CC BY-SA 4.0 (modified)
+
+Lewis Collard — "M&GN bridge pillar over the Fen Line, graffiti detail" — CC0
+
+Basile Morin — "Ambigram Zen Yes, blue and orange graffiti on concrete wall" — CC BY-SA 4.0 (modified)
+
+MZaplotnik — "Graffiti Nova Gorica 8" — CC BY-SA 3.0 (modified)
+
+Chevanon Photography — "Close-up of espresso machine with two brown coffee cups" — CC0
+
+Nemracc — "Beer glass microbrewery Heimatliebe in Duderstadt" — CC BY-SA 4.0 (modified)
+
+NPS Photo / Emily Mesner — "Eielson Alpine Trail View" — public domain
+
+SG2012 — "Datsun SPL311 (1965)" — CC BY 2.0 (modified)
+
+A S M Jobaer — "Binkada Quartz Wristwatch with Blue Sunburst Dial" — CC BY-SA 4.0 (modified)
+
+Agnes Monkelbaan — "Bergweg tussen Andiast, Ladinas en Breil-Brigels" 18 and 19 — CC BY-SA 4.0 (modified)
+
+StVeit Maps — "Glocknerstraße 2026 04" — CC BY-SA 4.0 (modified)
+
+All via Wikimedia Commons. Brands on the posters and signs are invented.
+
+# Sounds
+
+All sounds are synthesised in code, original work of this project — MIT
+
+# Fonts
+
+Jeremy Tribby (The Barlow Project Authors) — Barlow Semi Condensed — SIL OFL 1.1
+
+David Jonathan Ross — Bungee — SIL OFL 1.1
+
+Kevin Burke, Pedro Vergani — Sedgwick Ave Display — SIL OFL 1.1
+
+Font Diner — Permanent Marker — Apache 2.0
+
+Font Diner (Sideshow) — Rock Salt — Apache 2.0
+
+# HDRIs & Sky
+
+Greg Zaal, Jarod Guest — Kloofendal 48d Partly Cloudy, Qwantani Sunset, Qwantani Dawn, Kloppenheim 02 and 07 — CC0
+
+Greg Zaal — Kloofendal Overcast — CC0
+
+Jarod Guest, Sergej Majboroda — Snow Field — CC0
+
+All Pure Sky HDRIs from Poly Haven.
+
+# Tools
+
+Godot Engine contributors — Godot Engine 4.7 — MIT
+
+Blender Foundation — Blender — GPL (tool only)
+
+Andrew Hale, Aaron Buchler — Sapling Tree Gen — GPL (tool only)
+
+Joel Palmius et al. — MPFB 2 — GPL (tool only)
+
+Don McCurdy — glTF-Transform — MIT
+
+Full details with links: CREDITS.md

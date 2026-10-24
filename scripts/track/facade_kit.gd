@@ -1,0 +1,174 @@
+class_name FacadeKit
+## Photo facades: real windows, doors and shopfronts (Wikimedia / OSM texture
+## library photos, credits in assets/CREDITS.txt) packed into one atlas and
+## placed per bay and storey by shaders/theme_facade.gdshader on plain wall
+## quads. Nothing is drawn procedurally: every window, shutter, door and
+## shop window is a photo crop at its real size (never stretched; a unit
+## that doesn't fit a bay is scaled down uniformly).
+##
+## Atlas: assets/textures/facades/facade_{alb,nor,mask}.png, 4x5 cells of
+## 512 px (16 px edge padding against mip bleeding). mask: R = glass (lit
+## windows at night), G = roughness. Rebuild with
+##   tools/hrun.sh --script res://tools/build_facade_atlas.gd
+##
+## Wall API (any SurfaceTool-built mesh; call st.generate_tangents() before commit):
+##   var m := FacadeKit.material(FacadeKit.NORTH, lit, wet) # cached per args
+##   FacadeKit.add_wall(st, bl, right, width, y0, y1, street, tint, style, variant)
+## `style`: TOWN house, SHOP (shopfront ground floor), BLANK (plain wall),
+## FARM (small windows), BLOCK (industrial / harbour brick block, tiled photo
+## facade, ambientCG Facade018A). Region SOUTH swaps in shuttered
+## Mediterranean windows and doors. UV is metres along the face / above the
+## street; UV2 packs (width + 1000*style, height + 100*variant).
+##
+## Single unit as a quad (gimmick huts, sheds, pubs):
+##   FacadeKit.add_unit(st, centre, right, up, cell, height) with
+##   FacadeKit.unit_material(lit) on that surface.
+
+enum { TOWN = 0, SHOP = 1, BLANK = 2, FARM = 3, BLOCK = 4 }
+enum { NORTH = 0, SOUTH = 1 }
+
+const ALB := "res://assets/textures/facades/facade_alb.png"
+const NOR := "res://assets/textures/facades/facade_nor.png"
+const MASK := "res://assets/textures/facades/facade_mask.png"
+const BLOCK_ALB := "res://assets/textures/facades/block_alb.jpg"
+const BLOCK_NOR := "res://assets/textures/facades/block_nor.png"
+const BLOCK_MASK := "res://assets/textures/facades/block_mask.png"
+
+## Cell index -> source photo, crop (fractions of the photo), height in
+## metres (width follows the crop's aspect) and glass rect (fractions of the
+## photo; zero = unlit). Kept in sync with the shader's tables below.
+const CELLS := [
+	# 0..2 town windows
+	{src = "DE19B7_AugsburgWallWithWindow0001.jpg", crop = [0.19, 0.16, 0.81, 0.80], h = 2.9, glass = [0.35, 0.40, 0.65, 0.77], pale = true},
+	{src = "MarekCompositeWall00001.jpg", crop = [0.28, 0.17, 0.71, 0.71], h = 1.65, glass = [0.31, 0.21, 0.68, 0.65]},
+	{src = "MarekCompositeWall00002.jpg", crop = [0.32, 0.17, 0.71, 0.64], h = 1.25, glass = [0.35, 0.22, 0.67, 0.58]},
+	# 3..6 Mediterranean windows with shutters
+	{src = "This_charming_door_8643717688_.jpg", crop = [0.16, 0.07, 0.62, 0.74], h = 2.5, glass = [0.32, 0.15, 0.49, 0.69]},
+	{src = "Window_with_green_shutters_52829708373_.jpg", crop = [0.515, 0.31, 0.905, 0.765], h = 1.85, glass = [0.655, 0.36, 0.80, 0.70]},
+	{src = "Window_with_green_shutters_on_old_house_.jpg", crop = [0.535, 0.29, 0.87, 0.67], h = 1.8, glass = [0.655, 0.34, 0.78, 0.62]},
+	{src = "Rustic_old_grungy_and_weathered_green_wo.jpg", crop = [0.105, 0.05, 0.85, 0.80], h = 2.0, glass = [0.34, 0.14, 0.62, 0.72]},
+	# 7..11 doors (Freising, Bavaria)
+	{src = "DE19F1FreisingDoor00010.jpg", crop = [0.0, 0.0, 1.0, 1.0], h = 2.7, door = true},
+	{src = "DE19F1FreisingDoor00003.jpg", crop = [0.0, 0.0, 1.0, 1.0], h = 2.7, door = true},
+	{src = "DE19F1FreisingDoor00005.jpg", crop = [0.0, 0.0, 1.0, 1.0], h = 2.6, door = true},
+	{src = "DE19F1FreisingDoor00006.jpg", crop = [0.0, 0.0, 1.0, 1.0], h = 2.8, door = true},
+	{src = "DE19F1FreisingDoor00004.jpg", crop = [0.0, 0.0, 1.0, 1.0], h = 2.6, door = true},
+	# 12 Provençal door, 13 German shopfront, 14 arched town door, 15 Provençal window + door
+	{src = "This_charming_door_8643717688_.jpg", crop = [0.62, 0.08, 0.83, 0.91], h = 3.0, door = true},
+	{src = "Closed_bakery_in_Bad_Kreuznach.jpg", crop = [0.27, 0.47, 0.92, 0.94], h = 2.75, glass = [0.45, 0.48, 0.88, 0.84]},
+	{src = "Closed_bakery_in_Bad_Kreuznach.jpg", crop = [0.005, 0.2, 0.185, 0.93], h = 3.4, door = true},
+	{src = "This_charming_door_8643717688_.jpg", crop = [0.16, 0.07, 0.83, 0.91], h = 3.3, glass = [0.32, 0.15, 0.49, 0.69]},
+	# 16 Austrian bakery front (Enns), 17 café front (Neulußheim), 18 hat shop window (Italy)
+	{src = "Enns_Haus_Kirchengasse_2_T_r_und_Schaufe.jpg", crop = [0.2, 0.33, 0.83, 0.85], h = 2.75, glass = [0.27, 0.36, 0.49, 0.67]},
+	{src = "20110625Cafe_Walz_Neulussheim2.jpg", crop = [0.14, 0.30, 0.87, 0.75], h = 2.7, glass = [0.15, 0.32, 0.86, 0.70]},
+	{src = "DSCF8682.jpg", crop = [0.06, 0.0, 0.98, 0.92], h = 2.3, glass = [0.08, 0.02, 0.96, 0.88]},
+]
+
+static var _cache := {}
+
+
+## Width/height in metres of a cell (from its crop aspect; filled by the
+## atlas builder into SIZES so nothing has to load the photos at runtime).
+static func cell_size(cell: int) -> Vector2:
+	return SIZES[cell]
+
+
+## Generated by tools/build_facade_atlas.gd (photo crop aspect x height).
+const SIZES := [
+	Vector2(1.70, 2.90), Vector2(1.32, 1.65), Vector2(1.04, 1.25), Vector2(2.57, 2.50),
+	Vector2(2.40, 1.85), Vector2(2.38, 1.80), Vector2(3.00, 2.00), Vector2(1.57, 2.70),
+	Vector2(1.23, 2.70), Vector2(1.12, 2.60), Vector2(1.42, 2.80), Vector2(1.29, 2.60),
+	Vector2(1.14, 3.00), Vector2(5.71, 2.75), Vector2(1.26, 3.40), Vector2(3.94, 3.30),
+	Vector2(2.50, 2.75), Vector2(5.84, 2.70), Vector2(3.07, 2.30),
+]
+
+
+static func material(region := NORTH, lit := 0.0, wet := 0.0) -> ShaderMaterial:
+	var key := "%d_%.2f_%.2f" % [region, lit, wet]
+	if _cache.has(key):
+		return _cache[key]
+	var m := ShaderMaterial.new()
+	m.shader = load("res://shaders/theme_facade.gdshader")
+	m.set_shader_parameter("wall_albedo", load("res://assets/themes/plastered_wall/plastered_wall_diff_1k.jpg"))
+	m.set_shader_parameter("wall_normal", load("res://assets/themes/plastered_wall/plastered_wall_nor_gl_1k.jpg"))
+	_bind(m)
+	m.set_shader_parameter("region", region)
+	m.set_shader_parameter("lit", lit)
+	m.set_shader_parameter("wet", wet)
+	_cache[key] = m
+	return m
+
+
+## Atlas + block textures and the per-cell size table on a facade material
+## (themes.gd builds its own material with its wall textures, then calls this).
+static func _bind(m: ShaderMaterial) -> void:
+	m.set_shader_parameter("atlas_alb", load(ALB))
+	m.set_shader_parameter("atlas_nor", load(NOR))
+	m.set_shader_parameter("atlas_mask", load(MASK))
+	m.set_shader_parameter("block_alb", load(BLOCK_ALB))
+	m.set_shader_parameter("block_nor", load(BLOCK_NOR))
+	m.set_shader_parameter("block_mask", load(BLOCK_MASK))
+	var sizes := PackedVector2Array()
+	for s: Vector2 in SIZES:
+		sizes.append(s)
+	m.set_shader_parameter("cell_size", sizes)
+
+
+## Wall quad for the facade shader. `bl` bottom-left corner at y0 seen from
+## outside, `right` the viewer's right (horizontal, unit length).
+static func add_wall(st: SurfaceTool, bl: Vector3, right: Vector3, width: float, y0: float, y1: float,
+		street: float, tint: Color, style := TOWN, variant := 0) -> void:
+	var out := right.cross(Vector3.UP).normalized()
+	var p0 := Vector3(bl.x, y0, bl.z)
+	var p1 := p0 + right * width
+	var p2 := Vector3(p1.x, y1, p1.z)
+	var p3 := Vector3(p0.x, y1, p0.z)
+	var uv2 := Vector2(width + 1000.0 * style, (y1 - street) + 100.0 * (variant % 10))
+	var uvs := [Vector2(0, y0 - street), Vector2(width, y0 - street), Vector2(width, y1 - street), Vector2(0, y1 - street)]
+	var ps := [p0, p1, p2, p3]
+	for k: int in [0, 2, 1, 0, 3, 2]:
+		st.set_color(tint)
+		st.set_normal(out)
+		st.set_uv(uvs[k])
+		st.set_uv2(uv2)
+		st.add_vertex(ps[k])
+
+
+static func unit_material(lit := 0.0) -> ShaderMaterial:
+	var key := "unit_%.2f" % lit
+	if _cache.has(key):
+		return _cache[key]
+	var m := ShaderMaterial.new()
+	m.shader = load("res://shaders/facade_unit.gdshader")
+	m.set_shader_parameter("atlas_alb", load(ALB))
+	m.set_shader_parameter("atlas_nor", load(NOR))
+	m.set_shader_parameter("atlas_mask", load(MASK))
+	m.set_shader_parameter("lit", lit)
+	_cache[key] = m
+	return m
+
+
+## One photo unit (window / door) as a quad standing on `centre` (bottom
+## middle), facing `right.cross(up)`. Height in metres; width from the photo.
+static func add_unit(st: SurfaceTool, bottom_mid: Vector3, right: Vector3, cell: int, height := 0.0) -> Vector2:
+	var s: Vector2 = SIZES[cell]
+	if height > 0.0:
+		s *= height / s.y
+	var r := right.normalized() * s.x * 0.5
+	var up := Vector3.UP * s.y
+	var out := right.cross(Vector3.UP).normalized()
+	var cx := float(cell % 4)
+	var cy := float(cell / 4)
+	var pad := 16.0 / 512.0
+	var u0 := (cx + pad) / 4.0
+	var u1 := (cx + 1.0 - pad) / 4.0
+	var v0 := (cy + pad) / 5.0
+	var v1 := (cy + 1.0 - pad) / 5.0
+	var ps := [bottom_mid - r, bottom_mid + r, bottom_mid + r + up, bottom_mid - r + up]
+	var uvs := [Vector2(u0, v1), Vector2(u1, v1), Vector2(u1, v0), Vector2(u0, v0)]
+	for k: int in [0, 2, 1, 0, 3, 2]:
+		st.set_color(Color.WHITE)
+		st.set_normal(out)
+		st.set_uv(uvs[k])
+		st.add_vertex(ps[k])
+	return s

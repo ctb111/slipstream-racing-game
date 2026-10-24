@@ -1,0 +1,10 @@
+cat_ginger -90
+cow_red 180
+crow 180
+deer 180
+dog_lab 90
+dog_shepherd 90
+gull 180
+pigeon 90
+sheep 180
+horse -90

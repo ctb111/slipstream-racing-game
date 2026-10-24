@@ -1,0 +1,159 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v5.1.18",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "metal_jerrycan"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "metal_jerrycan",
+      "normalTexture": {
+        "index": 0
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1
+        },
+        "metallicRoughnessTexture": {
+          "index": 2
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Cube.001",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/jpeg",
+      "name": "metal_jerrycan_nor_gl",
+      "uri": "textures/metal_jerrycan_nor_gl_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "metal_jerrycan_diff",
+      "uri": "textures/metal_jerrycan_diff_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "metal_jerrycan_metal-metal_jerrycan_rough",
+      "uri": "textures/metal_jerrycan_arm_1k.jpg"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 11392,
+      "max": [
+        0.18016786873340607,
+        0.4551738500595093,
+        0.08313124626874924
+      ],
+      "min": [
+        -0.17016199231147766,
+        0.000013880239748687018,
+        -0.0886126458644867
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 11392,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 11392,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 60066,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 136704,
+      "byteOffset": 0,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 136704,
+      "byteOffset": 136704,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 91136,
+      "byteOffset": 273408,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 120132,
+      "byteOffset": 364544,
+      "target": 34963
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 484676,
+      "uri": "metal_jerrycan.bin"
+    }
+  ]
+}

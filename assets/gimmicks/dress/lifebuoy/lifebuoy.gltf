@@ -1,0 +1,159 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v5.1.19",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "lifebuoy"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "lifebuoy",
+      "normalTexture": {
+        "index": 0
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1
+        },
+        "metallicRoughnessTexture": {
+          "index": 2
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Torus.001",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/jpeg",
+      "name": "lifebuoy_nor_gl",
+      "uri": "textures/lifebuoy_nor_gl_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "lifebuoy_diff",
+      "uri": "textures/lifebuoy_diff_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "lifebuoy_metal-lifebuoy_rough",
+      "uri": "textures/lifebuoy_arm_1k.jpg"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 5966,
+      "max": [
+        0.39272621273994446,
+        0.37899452447891235,
+        0.08440569788217545
+      ],
+      "min": [
+        -0.3904019892215729,
+        -0.4621988832950592,
+        -0.07071281224489212
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 5966,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 5966,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 32184,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 71592,
+      "byteOffset": 0,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 71592,
+      "byteOffset": 71592,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 47728,
+      "byteOffset": 143184,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 64368,
+      "byteOffset": 190912,
+      "target": 34963
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 255280,
+      "uri": "lifebuoy.bin"
+    }
+  ]
+}

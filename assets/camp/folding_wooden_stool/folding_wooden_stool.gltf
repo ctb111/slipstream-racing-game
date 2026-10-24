@@ -1,0 +1,159 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v4.0.44",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "folding_wooden_stool"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "folding_wooden_stool",
+      "normalTexture": {
+        "index": 0
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1
+        },
+        "metallicRoughnessTexture": {
+          "index": 2
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Plane",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/jpeg",
+      "name": "folding_wooden_stool_nor_gl",
+      "uri": "textures/folding_wooden_stool_nor_gl_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "folding_wooden_stool_diff",
+      "uri": "textures/folding_wooden_stool_diff_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "folding_wooden_stool_metal-folding_wooden_stool_rough",
+      "uri": "textures/folding_wooden_stool_arm_1k.jpg"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 4846,
+      "max": [
+        0.26476430892944336,
+        0.44200223684310913,
+        0.2752189040184021
+      ],
+      "min": [
+        -0.2630695104598999,
+        0.000033736228942871094,
+        -0.2718648910522461
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 4846,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 4846,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 18972,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 58152,
+      "byteOffset": 0,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 58152,
+      "byteOffset": 58152,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 38768,
+      "byteOffset": 116304,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 37944,
+      "byteOffset": 155072,
+      "target": 34963
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 193016,
+      "uri": "folding_wooden_stool.bin"
+    }
+  ]
+}

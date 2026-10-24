@@ -1,0 +1,181 @@
+Textures and HDRI sky (assets/textures, assets/hdri): CC0 1.0, Poly Haven, https://polyhaven.com
+  (licence: https://polyhaven.com/license, https://creativecommons.org/publicdomain/zero/1.0/)
+  Ground textures: asphalt_track, grass_ground, gravel_floor, sparse_grass (https://polyhaven.com/a/<name>)
+  HDRI skies (https://polyhaven.com/a/<name>), all CC0:
+    kloofendal_48d_partly_cloudy_puresky, kloofendal_overcast_puresky,
+    qwantani_sunset_puresky, snow_field_puresky,
+    kloppenheim_02_puresky, kloppenheim_07_puresky (night),
+    qwantani_dawn_puresky (dawn)
+    (Greg Zaal; puresky edits Jarod Guest)
+Original textures made for this game (MIT, like the code):
+  assets/textures/car_dirt/dirt_noise.png  - baked by tools/bake_dirt_noise.gd
+  assets/fx/smoke_puff.png                 - baked smoke sprite (fbm noise x radial falloff), see scripts/car/tire_fx.gd
+  assets/textures/fx/headlight_pool.png    - baked from the former _pool_texture() maths in scripts/car/car_lights.gd
+
+Car model (assets/cars/porsche930.glb): "FREE 1975 Porsche 911 (930) Turbo"
+  by Lionsharp Studios, https://sketchfab.com/lionsharp
+  https://sketchfab.com/3d-models/free-1975-porsche-911-930-turbo-8568d9d14a994b9cae59499f0dbed21e
+  License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+  Obtained as the web-optimised copy in https://github.com/pmndrs/examples (MIT repo),
+  decompressed (Draco / quantization removed) with glTF-Transform. Licence and author
+  verified against the Sketchfab API listing (2026-10-24).
+
+Font: Barlow Semi Condensed, SIL Open Font License 1.1 (assets/fonts/OFL.txt)
+  Bake-time fonts in assets/trackside/src/fonts (licence texts next to them): Bungee (OFL 1.1),
+  Sedgwick Ave Display (OFL 1.1), Permanent Marker (Apache 2.0), Rock Salt (Apache 2.0).
+
+Sound: no recorded samples. Every sound in the game is synthesised in code at
+  load time (engines, turbo, tyres on tarmac / gravel / grass, wind, gear clunk:
+  scripts/car/car_audio.gd; wall / guardrail / car impacts and metal scraping:
+  scripts/car/car_impacts.gd; crowd, PA, birds, weather beds:
+  scripts/world/ambience.gd and weather.gd; menu clicks: scripts/ui/ui_sounds.gd).
+  Original work of this project, no third-party licence applies.
+
+Trackside atlases (painted graffiti, road paint, banners, signs): original, see assets/trackside/CREDITS_trackside.txt
+
+Wildlife (animals, birds, pets): see assets/wildlife/CREDITS_wildlife.txt (Sketchfab via Objaverse, all CC BY 4.0).
+
+Spectator camp, parked cars, TV helicopter (scripts/track/gimmicks/gx_camp.gd,
+  gx_parked_cars.gd, gx_heli.gd):
+  Camp props from Poly Haven (https://polyhaven.com, CC0 1.0), assets/camp/:
+    plastic_monobloc_chair_01, folding_wooden_stool, wooden_picnic_table,
+    stone_fire_pit, metal_jerrycan, plastic_jerrycan, modified_thermos,
+    wicker_basket_01, plastic_bottle_gallon, can_rusted,
+    outdoor_table_chair_set_01, Barrel_02 (https://polyhaven.com/a/<name>).
+  Hospitality village, hot-air balloons, blimp, farm (gx_hospitality.gd, gx_sky.gd,
+  gx_farm.gd): procedural (original) with the same CC0 materials; field soil =
+  Poly Haven farm_soil (assets/themes/farm_soil, CC0); brand art from
+  assets/trackside (original).
+  Tents, caravan, gazebo, camping chairs, coolers, flags, helicopter and camera
+  drone: procedural geometry (original), textured with the CC0 PBR sets in
+  assets/materials (canvas = ambientCG Fabric030, painted_metal = Metal016, ...).
+  Parked cars reuse the game's car models (see assets/cars/CREDITS_cars.txt).
+  Helicopter / drone rotor sound: synthesised in code (original).
+
+Gimmick structures (scripts/track/gimmicks/gx_overpass.gd, gx_arch.gd, gx_sponsor_arch.gd, gx_geo.gd)
+  Geometry is procedural (original work); surfaces use the Mats PBR sets above plus:
+  assets/materials/stone  <- "Large Sandstone Blocks" (large_sandstone_blocks), Poly Haven, CC0
+                             https://polyhaven.com/a/large_sandstone_blocks
+  assets/gimmicks/street_lamp_01 <- "Street Lamp 01" (street_lamp_01), Poly Haven, CC0
+                             https://polyhaven.com/a/street_lamp_01
+  Sponsor / plaque prints reuse assets/trackside/trackside_signs.png (original artwork).
+
+Gimmick pieces: graffiti, billboards, road text (gx_graffiti.gd, gx_billboard.gd, gx_road_text.gd)
+------------------------------------------------------------------------------------------------
+Baked by tools/make_gx_graffiti.py, make_gx_billboard.py and make_gx_road_text.py from the sources
+in assets/gimmicks/src. Photos are cropped, levelled and weathered; brands and text are invented.
+Graffiti walls (assets/gimmicks/gx_graffiti_walls.png), Wikimedia Commons photos, cropped/levelled/weathered.
+The graffiti artworks belong to their (anonymous) street artists; photos licensed as shown.
+Source file in assets/gimmicks/src -> Commons file (https://commons.wikimedia.org/wiki/File:<name>):
+  g138.jpg  Graffiti-hannover_03_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g141.jpg  Graffiti-hannover_06_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g142.jpg  Graffiti-hannover_07_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g143.jpg  Graffiti-hannover_08_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g144.jpg  Graffiti-hannover_09_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g145.jpg  Graffiti-hannover_10_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g146.jpg  Graffiti-hannover_11_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g149.jpg  Graffiti-hannover_14_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g150.jpg  Graffiti-hannover_15_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g151.jpg  Graffiti-hannover_16_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g152.jpg  Graffiti-hannover_17_hg.jpg  Hannes Grobe, CC BY-SA 4.0
+  g156.jpg  Hallstadt_Graffiti_-20200417-RM-165317.jpg  Ermell, CC BY-SA 4.0
+  g162.jpg  M%26GN_bridge_pillar_over_the_Fen_Line,_graffiti_detail.jpg  Lewis Collard, CC0
+  g003.jpg  Ambigram_Zen_Yes,_blue_and_orange_graffiti_on_concrete_wall.jpg  Basile Morin, CC BY-SA 4.0
+  g008.jpg  Graffiti_Nova_Gorica_8.JPG  MZaplotnik, CC BY-SA 3.0
+  (matched by image size and SHA-1 against the Commons 3840 px renditions)
+Graffiti tags (assets/gimmicks/gx_graffiti_tags.png): ambientCG "Graffiti Set 001", CC0
+      https://ambientcg.com/view?id=GraffitiSet001  (src: GraffitiSet001_Opacity.png)
+Billboard posters (assets/gimmicks/gx_billboard.png), Wikimedia Commons photos, cropped, with invented brands:
+  ad_espresso_6.jpg  "Close-up of espresso machine with two brown coffee cups.jpg", Chevanon Photography, CC0   (MARZELLI)
+  ad_beer_3.jpg      "Beer glass microbrewery Heimatliebe in Duderstadt, Lower Saxony, Germany.jpg",
+                     Nemracc, CC BY-SA 4.0                                                            (NORDLICHT)
+  ad_alps_6.jpg      "Eielson Alpine Trail View (416fd47c-ab20-4c43-b2e3-3470c9db0f80).JPG",
+                     NPS Photo / Emily Mesner, public domain (US National Park Service)                (HELIOS BENZIN)
+  ad_classic_7.jpg   "Datsun SPL311 (1965).jpg", SG2012, CC BY 2.0                                    (VALTER OIL)
+  ad_watch_4.jpg     "Binkada Quartz Wristwatch with Blue Sunburst Dial and Faceted Crystal 01.jpg",
+                     A S M Jobaer, CC BY-SA 4.0                                                       (AUREL WATCHES)
+  ad_alps_4.jpg      "Bergweg tussen Andiast, Ladinas en Breil-Brigels (actm) 18.jpg", Agnes Monkelbaan, CC BY-SA 4.0 (BERGMANN)
+  ad_alps_5.jpg      "Bergweg tussen Andiast, Ladinas en Breil-Brigels (actm) 19.jpg", Agnes Monkelbaan, CC BY-SA 4.0 (OSTRA FILM)
+  ad_alps_8.jpg      "Glocknerstraße 2026 04.jpg", StVeit Maps, CC BY-SA 4.0                          (HALDEN TYRES)
+  Pages: https://commons.wikimedia.org/wiki/File:<name>
+  Typography: Barlow Semi Condensed (OFL, assets/fonts). Road signs: original vector artwork.
+Licence links: CC BY 2.0 https://creativecommons.org/licenses/by/2.0/
+  CC BY 2.5 https://creativecommons.org/licenses/by/2.5/   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/
+  CC BY-SA 3.0 https://creativecommons.org/licenses/by-sa/3.0/   CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
+  CC0 1.0 https://creativecommons.org/publicdomain/zero/1.0/
+Share-alike: the baked atlases gx_graffiti_walls.png and gx_billboard.png are adaptations of CC BY-SA
+  photos and are therefore licensed CC BY-SA 4.0 (not MIT).
+Road paint glyphs (assets/gimmicks/gx_road_text.png): Permanent Marker (Apache 2.0), roughened.
+
+Industrial gimmicks (scripts/track/gimmicks/gx_warehouse.gd, gx_industrial.gd, gx_props.gd)
+  Models in assets/industrial/*.glb: Poly Haven (https://polyhaven.com, CC0), 1k textures,
+  some decimated with gltf-transform simplify. Sources (gltf) in assets/industrial/src.
+    wooden_crate_01 (James Ray Cock), wooden_crate_02 (James Ray Cock, Jurita Burger),
+    Barrel_01 (Jorge Camacho), barrel_03 (Serhii Khromov), steel_frame_shelves_01 (James Ray Cock),
+    hanging_industrial_lamp (Kuutti Siitonen), old_tyre (MP), propane_tank (Slinc),
+    utility_box_01 (James Ray Cock), security_light (Maximilian Schuster),
+    cardboard_box_01 (Rahul Chaudhary), cement_bag (PierreB3D), covered_car (MP),
+    concrete_road_barrier (Amal Kumar), metal_trash_can (GurJas Studios),
+    modular_chainlink_fence (James Ray Cock, Amal Kumar), exterior_aircon_unit (Monsta3D),
+    hand_truck (Mutanzom3D).  Pages: https://polyhaven.com/a/<id>
+  Hay texture (assets/industrial/hay): ambientCG ThatchedRoof001A (CC0), https://ambientcg.com/view?id=ThatchedRoof001A
+  Walls/roofs/floors use the shared Mats sets (assets/materials, see CREDITS_materials.txt);
+  tunnel rock uses assets/themes/cliff_side (Poly Haven, CC0).
+  Forklift, tractor, pallets, racking, containers, tanks, tower crane: procedural (this project).
+
+Track dressing landmarks (scripts/track/gimmicks/gx_landmarks.gd; assets/gimmicks/dress/), Poly Haven, CC0
+(https://polyhaven.com, licence: https://polyhaven.com/license):
+  modular_wooden_pier (Rico Cilliers), wooden_picnic_table (Ulan Cabanilla),
+  wooden_lantern_01, wooden_barrels_01, wine_barrel_01, wooden_crate_01 (James Ray Cock),
+  lifebuoy (Hank Kaamura). Wind turbines, maypole and festoon lights are procedural
+  (ambientCG/Poly Haven photo materials from assets/materials).
+  Coast shore boulders (themes.gd _shore_rocks) reuse the Poly Haven CC0 rock scans
+  rock_07, rock_09, stone_01 from assets/vegetation/rocks (see CREDITS_vegetation.txt).
+
+Track landmarks for Hochwald / Valle Club (scripts/track/gimmicks/lm_hochwald.gd, lm_valle.gd):
+  ski jump, log yard, hunters' high seats, Tenuta Valle wine estate, vineyard, cypresses.
+  Procedural geometry (original), textured only with assets already in the project:
+  assets/materials (Poly Haven / ambientCG CC0 sets, see CREDITS_materials.txt),
+  assets/vegetation bark + leaf atlases (see CREDITS_vegetation.txt),
+  assets/textures/grass_ground (Poly Haven, CC0).
+  assets/gimmicks/electricity_poles <- "Modular Electricity Poles" (modular_electricity_poles), Poly Haven, CC0
+                             https://polyhaven.com/a/modular_electricity_poles  (scripts/track/gimmicks/gx_power.gd)
+  Towers, lattice pylons, wind turbines and sign gantries (gx_tower.gd, gx_power.gd, gx_turbine.gd,
+  gx_sign_gantry.gd) are procedural, on the Mats CC0 PBR sets; sign boards are drawn at load time.
+  assets/industrial/fence_wire_rgba.png: modular_chainlink_fence wire diffuse + wire_alpha (Poly Haven, CC0) merged.
+  gx_roadside.gd / gx_works.gd reuse these models plus street_lamp_01 (Poly Haven, CC0, assets/gimmicks);
+  pumps, canopy, diner, cones, barriers, excavator, roller and site cabin are procedural (this project).
+
+Tree models (assets/vegetation/trees/models/*.res; forest + theme trees on all tracks):
+  Grown with "Sapling Tree Gen" 0.3.7 (Blender add-on by Andrew Hale & Aaron Buchler, Blender
+  Foundation; GPL-2.0-or-later, https://extensions.blender.org/add-ons/sapling-tree-gen/), run
+  headless in Blender 5.2 by tools/trees/gen_trees.py (own code). The add-on is a tool only: the
+  generated meshes are our own output and the add-on is not shipped. Species: Norway spruce, Scots
+  pine, beech, oak, birch, maple, olive, stone (umbrella) pine, Italian cypress, Lombardy poplar,
+  2-5 age classes each. Leaf/needle cards and bark use the existing photo atlases
+  (Poly Haven + ambientCG, CC0; see assets/vegetation/CREDITS_vegetation.txt).
+  tools/trees/import_trees.gd converts the bakes into Godot meshes.
+
+== Alpenpass (alpine theme) terrain textures — Poly Haven, CC0 ==
+assets/themes/alpine/: aerial_rocks_02, rock_08, gray_rocks, snow_02 (1k diffuse + GL normal)
+https://polyhaven.com/a/aerial_rocks_02  https://polyhaven.com/a/rock_08
+https://polyhaven.com/a/gray_rocks  https://polyhaven.com/a/snow_02
+
+== Photo facades: windows, doors, shopfronts (FacadeKit, shaders/theme_facade.gdshader) ==
+Atlas assets/textures/facades/facade_{alb,nor,mask}.png is built by tools/build_facade_atlas.gd from the
+photos in assets/facades_src/ (crops; normal + glass masks derived from the photos). Sources:
+- OpenStreetMap wiki Texture Library (public domain, https://wiki.openstreetmap.org/wiki/Texture_Library,
+  .../Texture_Library_Doors): DE19B7_AugsburgWallWithWindow0001, MarekCompositeWall00001/00002,
+  DE19F1FreisingDoor00003/00004/00005/00006/00010.
+- Wikimedia Commons (https://commons.wikimedia.org/wiki/File:<name>), file in assets/facades_src:
+  Window_with_green_shutters_(52829708373).jpg, Window_with_green_shutters_on_old_house_(52829664075).jpg,
+  Rustic_old_grungy_and_weathered_green_wooden_window_shutters_(52829668245).jpg
+      by Jernej Furman, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+  This_charming_door_(8643717688).jpg by decar66, CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+  Closed_bakery_in_Bad_Kreuznach.jpg by Spielvogel, CC0 (https://creativecommons.org/publicdomain/zero/1.0/)
+  Enns,_Haus_Kirchengasse_2,_Tür_und_Schaufenster.jpg by Dguendel, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+  20110625Cafe_Walz_Neulussheim2.jpg by AnRo0002, CC0 (https://creativecommons.org/publicdomain/zero/1.0/)
+  DSCF8682.JPG by Twice25 & Rinina25, CC BY 2.5 (https://creativecommons.org/licenses/by/2.5/)
+  Modified: cropped, levelled; normal and glass masks derived from the photos.
+- Brick block facade (style BLOCK): ambientCG Facade018A (CC0, https://ambientcg.com/a/Facade018A),
+  assets/textures/facades/block_*.

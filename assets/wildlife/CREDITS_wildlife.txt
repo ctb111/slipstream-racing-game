@@ -1,0 +1,24 @@
+Wildlife kit models (assets/wildlife/models, used by scripts/world/wildlife.gd)
+=============================================================================
+All from Sketchfab, obtained through the Objaverse dataset (Allen Institute for
+AI, https://huggingface.co/datasets/allenai/objaverse; it redistributes the
+creators' own licences). Re-posed / joined / scaled / decimated and textures
+shrunk by assets/wildlife/bake/bake_animals.py (Blender, headless); the deer is
+untextured in the source and is painted in shaders/wildlife.gdshader.
+Animation is procedural (vertex shader), not from the sources.
+
+gull: "Seagull" by Bwinji Shamutete (MangyMedusa), https://sketchfab.com/3d-models/dd79fddb754f47caa3145e7d184e3e58, CC BY 4.0
+crow: "Crow" by zixisun02 (zixisun51), https://sketchfab.com/3d-models/45a169ef98804f06a9b7a4af1a04d6f9, CC BY 4.0
+pigeon: "pigeon - 3dModel - Free" by velvel, https://sketchfab.com/3d-models/e3ee02557a7d43a59ac030f5292aa2d3, CC BY 4.0
+bird_fly (every bird in flight, recoloured per species): "Bird from Poly by Google" by IronEqual (ie-niels), https://sketchfab.com/3d-models/6ef1e318e5e544bc954f02ba67654b93, CC BY 4.0 (originally Google Poly, CC BY)
+cat_ginger: "504班-02號-陳泓光-阿嬤養的貓" by BillyChen, https://sketchfab.com/3d-models/b6cb17060a3c445087a96a7b6b2f50bf, CC BY 4.0
+cow_red: "Cow" by Josué Boisvert (JosueBoisvert), https://sketchfab.com/3d-models/99d333e3b4e4470a8d7d38436489c001, CC BY 4.0
+cow_holstein: "cow" by rocket95, https://sketchfab.com/3d-models/dfa314a5b6bb4ec6b3fdbdc2ab59cbad, CC BY 4.0
+sheep: "Sheep" by hendrikReyneke, https://sketchfab.com/3d-models/67abff7459f34afca11e3effab62c761, CC BY 4.0
+horse: "Low Poly Horse" by Nioma van der Steen (fromthestone), https://sketchfab.com/3d-models/c8778532ab804fc18cae6a0e20feffd3, CC BY 4.0
+deer: "Walk Deer" by Eseyeyo, https://sketchfab.com/3d-models/7d988ce63dae499297bc2c46007240f0, CC BY 4.0
+dog_lab: "狗狗走路" by HonDaMcd, https://sketchfab.com/3d-models/7d6d8c6b5a4a4377823ef1b837848177, CC BY 4.0
+dog_shepherd: "Dog" by Andy Andy (rootrainz4), https://sketchfab.com/3d-models/10f72adc3c5f4e6db3322963d73e14ee, CC BY 4.0
+
+Owl call: synthesised in code (Wildlife._owl_hoot), no samples.
+Paddock fences: project wood material (Poly Haven CC0 textures, see assets/CREDITS.txt).
