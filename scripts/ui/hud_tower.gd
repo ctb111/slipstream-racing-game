@@ -15,6 +15,7 @@ var _y := {} ## Entry -> displayed row y (animated)
 var _shown: Array = [] ## order being displayed
 var _pending: Array = [] ## newer order waiting to settle
 var _pending_t := 0.0
+var _redraw_t := 0.0
 
 
 func _init() -> void:
@@ -47,12 +48,17 @@ func _process(dt: float) -> void:
 	var order := _order(dt)
 	var t := 1.0 - exp(-dt * 14.0)
 	var step := ROW_H + ROW_GAP
+	var moving := false
 	for i in order.size():
 		var target := i * step
 		var y: float = lerpf(_y.get(order[i], target), target, t)
 		_y[order[i]] = target if absf(y - target) < 0.5 else y
+		moving = moving or _y[order[i]] != target or y != target
 	size.y = order.size() * step
-	queue_redraw()
+	_redraw_t -= dt
+	if is_visible_in_tree() and (moving or _redraw_t <= 0.0):
+		_redraw_t = 0.1
+		queue_redraw()
 
 
 func _gap(e, leader, i: int) -> String:

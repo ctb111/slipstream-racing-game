@@ -409,7 +409,11 @@ func _process(dt: float) -> void:
 		_car_t = 3.0
 		_cars.clear()
 		var root := get_tree().current_scene
-		if root:
+		if root and "entries" in root: # the race: its entries hold every car
+			for e in root.entries:
+				if e.car:
+					_cars.append(e.car)
+		elif root:
 			for n in root.find_children("*", "RigidBody3D", true, false):
 				if n is Car:
 					_cars.append(n)
@@ -432,7 +436,6 @@ func _process(dt: float) -> void:
 func _logic() -> void:
 	if _react.is_empty():
 		return
-	var seen := {}
 	for c in _cars:
 		if not is_instance_valid(c):
 			continue
@@ -451,7 +454,6 @@ func _logic() -> void:
 				for ri: int in lst:
 					var r: Array = _react[ri]
 					var d: float = (r[3] as Vector3).distance_to(p)
-					seen[ri] = minf(seen.get(ri, 1e9), d)
 					if r[4] != 0:
 						continue
 					match r[0]:

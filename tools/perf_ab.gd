@@ -45,8 +45,9 @@ func _hitches(dt: float) -> void:
 		print("perf-ab t=%.2f scale -> %.2f" % [_hitch_t, sc])
 		_last_scale = sc
 	if dt > 0.028:
-		print("perf-ab t=%.2f HITCH %.1f ms  scale %.2f  draw %d" % [_hitch_t, dt * 1000.0, sc,
-			RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)])
+		print("perf-ab t=%.2f HITCH %.1f ms  scale %.2f  draw %d  physics %.1f ms  process %.1f ms" % [_hitch_t, dt * 1000.0, sc,
+			RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME),
+			Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0, Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0])
 	if _hitch_t > 45.0:
 		print("perf-ab DONE")
 		get_tree().quit()
@@ -128,6 +129,13 @@ func _apply(f: String, on: bool) -> void:
 				env.set_glow_level(i, _state[f][i] if on else (_state[f][i] if i >= 4 else 0.0))
 		"glowup": # "off" = linear instead of bicubic glow upscale
 			RenderingServer.environment_glow_set_use_bicubic_upscale(on)
+		"atlas": # "off" = 2048 directional shadow map instead of the project's 4096
+			RenderingServer.directional_shadow_atlas_set_size(4096 if on else 2048, true)
+		"blend": # "off" = no blending between the shadow splits
+			w.sun.directional_shadow_blend_splits = on if _keep(f, w.sun.directional_shadow_blend_splits) else false
+		"shdist": # "off" = shadows end at 70 % of the preset's distance
+			var d: float = _keep(f, w.sun.directional_shadow_max_distance)
+			w.sun.directional_shadow_max_distance = d if on else d * 0.7
 		"tick60": # "off" = physics at 60 Hz instead of the project's rate
 			var hz: int = _keep(f, Engine.physics_ticks_per_second)
 			Engine.physics_ticks_per_second = hz if on else 60

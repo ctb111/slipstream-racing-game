@@ -190,7 +190,7 @@ func _update_res_note() -> void:
 	var s := Game.render_scale_now()
 	var auto := Game.render_scale == 0
 	var txt := "Screen %d × %d.  " % [win.x, win.y]
-	if auto and Game.quality <= 1:
+	if auto:
 		txt += "Auto: renders the 3D view at %d%% and lowers it (down to %d%%) whenever the frame rate dips below 60, upscaled with %s. The HUD always stays sharp." % [
 			roundi(s * 100), roundi(_auto_floor(win) * 100), Game.UPSCALER_NAMES[Game.upscaler].get_slice(" (", 0)]
 	elif s < 0.999:

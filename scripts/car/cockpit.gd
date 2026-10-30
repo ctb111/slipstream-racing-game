@@ -601,8 +601,11 @@ func _update_gauges(dt: float) -> void:
 			"volt": v = 0.62 + 0.03 * sin(Time.get_ticks_msec() * 0.0007)
 			"boost": v = clampf(car.throttle * smoothstep(2500.0, 5000.0, car.rpm), 0.0, 1.0) * 0.85 + 0.05
 			"clock":
-				var t := Time.get_time_dict_from_system()
-				v = fmod(float(t.hour) + t.minute / 60.0, 12.0) / 12.0
+				if Time.get_ticks_msec() >= _clock_at: # minute hand: once a second is plenty
+					_clock_at = Time.get_ticks_msec() + 1000
+					var t := Time.get_time_dict_from_system()
+					_clock_v = fmod(float(t.hour) + t.minute / 60.0, 12.0) / 12.0
+				v = _clock_v
 		var pivot: Node3D = n[0]
 		var want := -deg_to_rad(face.angle_at(clampf(v, 0.0, 1.02)))
 		# Needles have a little mass: they chase the value instead of snapping.
@@ -1410,6 +1413,8 @@ func _shield(on: bool) -> void:
 				_shield(true))
 
 var _probe: ReflectionProbe
+var _clock_v := 0.0 ## dash clock dial value
+var _clock_at := 0 ## ticks_msec of its next refresh
 var _reshield_pending := false
 var _reshields := 0
 

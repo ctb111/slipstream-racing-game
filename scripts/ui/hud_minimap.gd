@@ -66,7 +66,8 @@ func to_map(world: Vector3) -> Vector2:
 
 
 func _process(_dt: float) -> void:
-	queue_redraw()
+	if is_visible_in_tree():
+		queue_redraw()
 
 
 func _draw() -> void:

@@ -173,6 +173,7 @@ class SplitOverlay:
 	var _split_t := 0.0
 	var _split_delta := NAN
 	var _show := 0.0
+	var _drawn := [] ## [best, ghost] last drawn
 
 	func _init() -> void:
 		size = Vector2(262, 150)
@@ -185,11 +186,14 @@ class SplitOverlay:
 		_show = SPLIT_SHOW
 
 	func _process(dt: float) -> void:
+		var anim := _show > 0.0 or new_best > 0.0 # before the countdown so the last frame clears
 		_show = maxf(_show - dt, 0.0)
 		new_best = maxf(new_best - dt, 0.0)
-		queue_redraw()
+		if (anim or _drawn != [best, ghost]) and is_visible_in_tree():
+			queue_redraw()
 
 	func _draw() -> void:
+		_drawn = [best, ghost]
 		var w := size.x
 		HudStyle.panel(self, Rect2(0, 0, w, 64))
 		draw_rect(Rect2(0, 0, 3, 64), HudStyle.AMBER)

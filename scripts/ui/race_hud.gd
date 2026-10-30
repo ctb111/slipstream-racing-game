@@ -110,7 +110,8 @@ func _process(dt: float) -> void:
 	_info.last = p.last_lap
 	_info.best = p.best_lap
 	_info.last_delta = _last_delta
-	_info.queue_redraw()
+	if _info.is_visible_in_tree():
+		_info.queue_redraw()
 	_update_wrong_way(p, dt)
 	if p.car and is_instance_valid(p.car) and not p.finished:
 		_top_speed = maxf(_top_speed, absf(p.car.speed))

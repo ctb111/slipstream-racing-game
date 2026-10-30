@@ -41,10 +41,12 @@ func show_banner(text: String, sub := "") -> void:
 
 func _process(dt: float) -> void:
 	_clock += dt
+	var shown := _lap_t > 0.0 or _banner_t > 0.0 or _ww_a > 0.0 # checked before the fade so the last frame clears
 	_lap_t = maxf(_lap_t - dt, 0.0)
 	_banner_t = maxf(_banner_t - dt, 0.0)
 	_ww_a = move_toward(_ww_a, 1.0 if wrong_way else 0.0, dt * 4.0)
-	queue_redraw()
+	if (shown or _ww_a > 0.0) and is_visible_in_tree():
+		queue_redraw()
 
 
 ## 0..1 envelope: quick fade in, hold, fade out over the last 0.6 s.

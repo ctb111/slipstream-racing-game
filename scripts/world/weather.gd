@@ -360,13 +360,15 @@ func _build_environment(parent: Node3D) -> void:
 		sun.shadow_enabled = kind == Kind.CLEAR and Game.quality >= 2
 		sun.shadow_blur = 2.0
 		sun.light_specular = 0.6
-	sun.directional_shadow_max_distance = [90.0, 120.0, 160.0, 250.0][q]
-	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if q <= 1 else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
-	# Medium: 2 splits. Blend them and put the split at 20 % (~26 m, not the
-	# default 13 m) so no hard resolution seam crosses the road just ahead.
-	sun.directional_shadow_blend_splits = q >= 1
-	if q == 1:
-		sun.directional_shadow_split_1 = 0.2
+	# Low / Medium: one shadow map, not split cascades, so the scene is drawn into it
+	# once per frame. Shadows only have to be there (contact, cars, gantries), not
+	# reach far: frame rate first on integrated GPUs.
+	sun.directional_shadow_max_distance = [70.0, 80.0, 160.0, 250.0][q]
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL if q <= 1 else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+	sun.directional_shadow_blend_splits = q >= 2
+	# Fade shadows in over the far half of their range instead of the last 20 %:
+	# a bridge's or tree's shadow grows in as you approach rather than popping on.
+	sun.directional_shadow_fade_start = 0.4 if q <= 1 else 0.6
 	parent.add_child(sun)
 
 	# Changeable weather builds everything its scenario can need up front (idle

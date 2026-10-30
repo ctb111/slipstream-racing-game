@@ -63,7 +63,7 @@ func _ready() -> void:
 		Game.quality = clampi(int(_args.quality), 0, 3)
 	Game.apply_viewport_quality(get_viewport())
 	if not _args.has("nodynres"):
-		add_child(DynamicRes.new()) # only acts on Auto render resolution, Low / Medium
+		add_child(DynamicRes.new()) # only acts on Auto render resolution
 	var track_id: String = _args.get("track", Game.track_id)
 	if _args.has("weather"):
 		Game.weather_override = int(_args.weather)
@@ -508,9 +508,16 @@ func _rank() -> void:
 	order.sort_custom(func(a: Entry, b: Entry) -> bool: return a.progress > b.progress)
 	for i in order.size():
 		order[i].position = i + 1
+	order.make_read_only() # shared by standings() callers
+	_standings = order
+
+
+var _standings: Array[Entry] = [] ## last _rank() order (= sorted by position)
 
 
 func standings() -> Array[Entry]:
+	if _standings.size() == entries.size():
+		return _standings
 	var order: Array[Entry] = entries.duplicate()
 	order.sort_custom(func(a: Entry, b: Entry) -> bool: return a.position < b.position)
 	return order

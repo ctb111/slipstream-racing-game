@@ -32,6 +32,8 @@ static var _task := -1
 var _car: Car
 var _prev_v := Vector3.ZERO
 var _touching := {} ## collider instance id -> seconds since the last impact sound from it
+var _seen := {} ## colliders touched this tick (reused)
+var _kinds := {} ## collider instance id -> Kind (names don't change)
 var _hit: Array[AudioStreamPlayer3D] = []
 var _hit_next := 0
 var _scrape: AudioStreamPlayer3D
@@ -118,18 +120,22 @@ func _physics_process(dt: float) -> void:
 	var v := _car.linear_velocity
 	var dv := v - _prev_v
 	_prev_v = v
-	for id in _touching.keys():
-		_touching[id] += dt
+	if not _touching.is_empty():
+		for id in _touching.keys():
+			_touching[id] += dt
 	var scrape := 0.0
 	var rub := 0.0
 	var sparks := 0.0
 	var spark_at := spark_pos
 	var state := PhysicsServer3D.body_get_direct_state(_car.get_rid())
-	var seen := {}
+	_seen.clear()
 	if state:
 		for i in state.get_contact_count():
 			var col := state.get_contact_collider_object(i)
-			var kind := _kind(col)
+			var id := col.get_instance_id() if col else 0
+			if not _kinds.has(id):
+				_kinds[id] = _kind(col)
+			var kind: Kind = _kinds[id]
 			if kind == Kind.NONE or kind == Kind.GROUND:
 				continue
 			var n := state.get_contact_local_normal(i) # points from the obstacle into us
@@ -140,8 +146,7 @@ func _physics_process(dt: float) -> void:
 			# Speed change into the obstacle this tick, or the impulse the solver applied.
 			var into := maxf(absf(dv.dot(n)), state.get_contact_impulse(i).length() / maxf(_car.mass, 1.0))
 			var slide := (rel - n * rel.dot(n)).length()
-			var id := col.get_instance_id() if col else 0
-			seen[id] = true
+			_seen[id] = true
 			if not _touching.has(id) or _touching[id] > 0.35:
 				if into > MIN_IMPACT and (not _touching.has(id) or into > 3.0):
 					_impact(kind, into, state.get_contact_collider_position(i))
@@ -157,9 +162,10 @@ func _physics_process(dt: float) -> void:
 					scrape = maxf(scrape, 0.25 + 0.75 * k)
 				else:
 					rub = maxf(rub, 0.25 + 0.75 * k)
-	for id in _touching.keys():
-		if not seen.has(id) and _touching[id] > 0.5:
-			_touching.erase(id)
+	if not _touching.is_empty():
+		for id in _touching.keys():
+			if not _seen.has(id) and _touching[id] > 0.5:
+				_touching.erase(id)
 	spark_level = sparks
 	spark_pos = spark_at
 	_scrape_level = move_toward(_scrape_level, scrape, dt * (8.0 if scrape > _scrape_level else 5.0))

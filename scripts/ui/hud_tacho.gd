@@ -37,7 +37,8 @@ func _process(dt: float) -> void:
 	_abs_t = 0.25 if car.assist_abs and moving and car.brake > 0.55 and slip > 0.02 else maxf(_abs_t - dt, 0.0)
 	_tc_t = 0.25 if car.assist_tc and car.throttle > 0.5 and drive_slip > 0.05 and not car.drifting \
 			else maxf(_tc_t - dt, 0.0)
-	queue_redraw()
+	if is_visible_in_tree():
+		queue_redraw()
 
 
 func _max_rpm() -> float:

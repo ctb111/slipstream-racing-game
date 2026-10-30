@@ -26,6 +26,7 @@ theme/custom_font="res://assets/fonts/BarlowSemiCondensed-Medium.ttf"
 
 3d/physics_engine="Jolt Physics"
 common/physics_ticks_per_second=120
+common/max_physics_steps_per_frame=4
 common/physics_interpolation=true
 jolt_physics_3d/limits/world_boundary_shape_size=20000.0
 

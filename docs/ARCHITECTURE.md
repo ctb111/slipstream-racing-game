@@ -409,11 +409,14 @@ First run picks Medium on Apple GPUs, High elsewhere (`game.gd:94-96`).
 - **Car LODs.** `CarModel._with_lods` regenerates LODs after merging (the importer's are lost on rebuild).
 - **Upscaling.** `Game.render_scale` 0 = Auto, else 50/59/67/77/85/100 %; upscaler FSR 1 (default),
   FSR 2 (temporal, disables FXAA) or bilinear (`Game.scaling_mode`).
-- **DynamicRes** (`scripts/race/dynamic_res.gd`): only on Auto resolution at Low/Medium. Once per second it
-  steps the 3D scale down 5 % when below 62 fps, back up after a hold that doubles if a raise had to be
+- **DynamicRes** (`scripts/race/dynamic_res.gd`): on Auto resolution (any preset). Once per second it
+  steps the 3D scale down 5 % when below 62 fps (vsync on: below refresh - 1.5, since vsync caps the fps),
+  back up only when the measured GPU time is under 78 % of the frame budget, after a hold that doubles if a raise had to be
   undone. Floor 0.7 (lower on big screens, but never under ~1.6 MP). At the floor and still slow for 3 s it
   turns SSAO off and drops the four finest glow levels; back on after 5 s of clear headroom. Frozen during
-  loading, the countdown and the first 6 s of racing (shader compilation would mislead it).
+  loading, the countdown and the first 2 s of racing (shader compilation would mislead it). Starts at the
+  scale the last race on that track and preset settled at (`Game.auto_scales`, saved in settings.cfg), with SSAO already off if that race needed it. A restore
+  of SSAO that has to be undone within 15 s keeps it off for the rest of the race.
 - **Asset preloading.** `AssetPreload` decodes big textures, people meshes and grid car models on worker
   threads while the loading screen is up; three warm-up frames compile pipelines before the lights.
 

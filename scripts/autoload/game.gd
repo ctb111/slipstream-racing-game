@@ -30,8 +30,10 @@ enum WindowMode { WINDOWED, FULLSCREEN, EXCLUSIVE }
 const WINDOW_NAMES := ["Windowed", "Fullscreen", "Exclusive fullscreen"]
 var window_mode := WindowMode.WINDOWED
 var vsync := true
-## 3D render resolution: 0 = Auto (adaptive on Low / Medium), else percent 50..100.
+## 3D render resolution: 0 = Auto (adaptive), else percent 50..100.
 var render_scale := 0
+## Auto resolution: the 3D scale a race last settled at, per "track:quality" (DynamicRes starts there).
+var auto_scales := {}
 const RENDER_SCALES := [0, 50, 59, 67, 77, 85, 100] ## 50 / 59 / 67 / 77 = FSR Performance / Balanced / Quality / Ultra Quality
 enum Upscaler { FSR, FSR2, BILINEAR }
 const UPSCALER_NAMES := ["FSR 1 (sharp)", "FSR 2 (temporal)", "Bilinear"]
@@ -79,6 +81,8 @@ func _ready() -> void:
 		vsync = cfg.get_value("video", "vsync", vsync)
 		render_scale = cfg.get_value("video", "render_scale", render_scale)
 		upscaler = cfg.get_value("video", "upscaler", upscaler)
+		var sc = cfg.get_value("video", "auto_scales", {})
+		auto_scales = sc if sc is Dictionary else {}
 		var vols = cfg.get_value("audio", "volumes", {})
 		if vols is Dictionary:
 			for k in vols:
@@ -150,6 +154,7 @@ func save_settings() -> void:
 	cfg.set_value("video", "vsync", vsync)
 	cfg.set_value("video", "render_scale", render_scale)
 	cfg.set_value("video", "upscaler", upscaler)
+	cfg.set_value("video", "auto_scales", auto_scales)
 	cfg.set_value("audio", "volumes", volumes)
 	cfg.set_value("player", "units", units)
 	cfg.set_value("player", "control_hints", control_hints)
@@ -172,6 +177,8 @@ func apply_viewport_quality(vp: Viewport) -> void:
 	var soft: int = [RenderingServer.SHADOW_QUALITY_SOFT_VERY_LOW, RenderingServer.SHADOW_QUALITY_SOFT_LOW,
 		RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_HIGH][quality]
 	RenderingServer.directional_soft_shadow_filter_set_quality(soft)
+	# Sun shadow map: 2048 on Low / Medium saves ~1.5 ms on an M1 (slightly softer edges).
+	RenderingServer.directional_shadow_atlas_set_size(2048 if quality <= 1 else 4096, true)
 	RenderingServer.positional_soft_shadow_filter_set_quality(soft)
 	RenderingServer.environment_set_ssao_quality([RenderingServer.ENV_SSAO_QUALITY_VERY_LOW,
 		RenderingServer.ENV_SSAO_QUALITY_LOW, RenderingServer.ENV_SSAO_QUALITY_MEDIUM,
@@ -198,7 +205,7 @@ const BOT_NAMES := ["K. Weber", "A. Rossi", "J. Lindqvist", "M. Duval", "P. Nova
 
 
 ## Starting 3D render scale: the fixed choice, or Auto's starting point
-## (DynamicRes adjusts Auto on Low / Medium during a race).
+## (DynamicRes adjusts Auto during a race).
 func render_scale_now() -> float:
 	if render_scale > 0:
 		return render_scale / 100.0

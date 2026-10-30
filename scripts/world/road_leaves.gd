@@ -168,8 +168,13 @@ func _process(dt: float) -> void:
 	if _scan_t <= 0.0:
 		_scan_t = 1.0
 		_cars = []
-		if get_tree().current_scene:
-			for n in get_tree().current_scene.find_children("*", "RigidBody3D", true, false):
+		var root := get_tree().current_scene
+		if root and "entries" in root: # the race: its entries hold every car
+			for e in root.entries:
+				if e.car:
+					_cars.append(e.car)
+		elif root:
+			for n in root.find_children("*", "RigidBody3D", true, false):
 				if n is Car:
 					_cars.append(n)
 	var cam := get_viewport().get_camera_3d()
