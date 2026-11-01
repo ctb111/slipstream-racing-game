@@ -37,6 +37,21 @@ static func half_width() -> float:
 
 
 ## Point on the centreline `along` metres round the lap from the start line.
+static var _breath_at := 0
+
+
+## In a dress file: `await Gx.breath(c)` between sections. During an async
+## (windowed) build it lets a frame render when ~40 ms have passed since the
+## last one, so the loading screen keeps moving instead of freezing.
+static func breath(c: Node3D) -> void:
+	if not c.is_inside_tree() or not bool(c.get("async_build")):
+		return
+	if Time.get_ticks_msec() - _breath_at < 40:
+		return
+	await c.get_tree().process_frame
+	_breath_at = Time.get_ticks_msec()
+
+
 static func centre(c: Node3D, along: float) -> Vector3:
 	var cv := curve(c)
 	var l := cv.get_baked_length()
@@ -51,7 +66,7 @@ static func tangent(c: Node3D, along: float) -> Vector3:
 
 static func ground(c: Node3D, p: Vector3) -> float:
 	var t = c.get("terrain")
-	return (t as Terrain).height_at(p.x, p.z) if t is Terrain else p.y
+	return (t as Terrain).surface_at(p.x, p.z) if t is Terrain else p.y
 
 
 ## Frame beside the road: `lateral` metres beyond the road EDGE on `side`

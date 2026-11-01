@@ -62,7 +62,7 @@ func _run(curve: Curve3D) -> void:
 # ---------------------------------------------------------------- helpers
 
 func _ground(p: Vector3) -> float:
-	return terrain.height_at(p.x, p.z) if terrain else p.y
+	return terrain.surface_at(p.x, p.z) if terrain else p.y
 
 
 func _track_dist(p: Vector3) -> float:

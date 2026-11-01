@@ -21,7 +21,6 @@ const DEFAULTS := [
 	["look_left", "Look left", [KEY_Z, 0], {}],
 	["look_right", "Look right", [KEY_V, 0], {}],
 	["toggle_gearbox", "Auto / manual", [KEY_T, 0], {}],
-	["toggle_assists", "Assists on / off", [KEY_X, 0], {}],
 	["reset_car", "Reset to track", [KEY_R, 0], {b = JOY_BUTTON_BACK}],
 	["pause", "Pause", [KEY_ESCAPE, 0], {b = JOY_BUTTON_START}],
 ]

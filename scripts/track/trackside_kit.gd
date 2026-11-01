@@ -215,7 +215,7 @@ func rail_dist(i: int, side: float) -> float:
 
 
 func gy(p: Vector3) -> float:
-	return terrain.height_at(p.x, p.z) if terrain else p.y
+	return terrain.surface_at(p.x, p.z) if terrain else p.y
 
 
 ## Point `lateral` metres right of the centreline at sample i, on the ground.
@@ -685,7 +685,7 @@ func camp(p: Vector3, face: Vector3) -> void:
 	# camper van or estate car
 	var vc := Vector3(rng.randf_range(-3.0, 3.0), 0, 8.5)
 	var vm := Transform3D(m.basis * Basis(Vector3.UP, PI * 0.5 + rng.randf_range(-0.3, 0.3)), m * vc)
-	vm.origin.y = gy(vm.origin)
+	vm = on_slope(vm, 1.0, 1.8)
 	if rng.randf() < 0.55:
 		camper(vm)
 	else:
@@ -721,6 +721,23 @@ func camper(m: Transform3D) -> void:
 	box("props", "small", m, Vector3(2.1, 2.45, 0.4), Vector3(2.2, 0.05, 3.0), Color(0.75, 0.55, 0.2), 0.0, Basis(Vector3.FORWARD, -0.12))
 
 
+## `m` (upright) set down on the ground and tilted to it: half-track `hx`,
+## half-wheelbase `hz`, so a car or camper rests on all four wheels.
+func on_slope(m: Transform3D, hx: float, hz: float) -> Transform3D:
+	var o := m.origin
+	var x := m.basis.x.normalized()
+	var z := m.basis.z.normalized()
+	var yr := gy(o + x * hx)
+	var yl := gy(o - x * hx)
+	var yb := gy(o + z * hz)
+	var yf := gy(o - z * hz)
+	var bx := (x + Vector3.UP * (yr - yl) / (2.0 * hx)).normalized()
+	var bz := (z + Vector3.UP * (yb - yf) / (2.0 * hz)).normalized()
+	var by := bz.cross(bx).normalized()
+	o.y = (yr + yl + yb + yf) * 0.25
+	return Transform3D(Basis(bx, by, bx.cross(by)), o)
+
+
 ## A parked saloon / estate (local -z = its nose).
 func parked_car(m: Transform3D, col: Color, estate := false) -> void:
 	box("props", "mid", m, Vector3(0, 0.62, 0), Vector3(1.7, 0.62, 4.3), col, 0.55)
@@ -742,7 +759,7 @@ func car_row(p: Vector3, dir: Vector3, count: int) -> void:
 		c.y = gy(c)
 		if not site_ok(c, 1.5, 3.0):
 			continue
-		var m := frame_facing(c, dir.rotated(Vector3.UP, PI * 0.5 + rng.randf_range(-0.12, 0.12)))
+		var m := on_slope(frame_facing(c, dir.rotated(Vector3.UP, PI * 0.5 + rng.randf_range(-0.12, 0.12))), 0.8, 1.4)
 		parked_car(m, CAR_COLS[rng.randi() % CAR_COLS.size()], rng.randf() < 0.4)
 		placed += 1
 	if placed > 0:

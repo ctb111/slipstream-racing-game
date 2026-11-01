@@ -523,7 +523,7 @@ func _bolt(r: Array) -> void:
 	var dist := _rng.randf_range(22.0, 34.0)
 	var start: Vector3 = r[3]
 	var end := start + away.rotated(Vector3.UP, _rng.randf_range(-0.35, 0.35)) * dist
-	end.y = terrain.height_at(end.x, end.z) if terrain else start.y
+	end.y = terrain.surface_at(end.x, end.z) if terrain else start.y
 	var dir := (end - start)
 	dir.y = 0.0
 	var cu := _custom(r[1], r[2])
@@ -552,7 +552,7 @@ func _chase(r: Array, car_vel: Vector3) -> void:
 			end = start + along * dist
 	else:
 		r.append(start)
-	end.y = terrain.height_at(end.x, end.z) if terrain else start.y
+	end.y = terrain.surface_at(end.x, end.z) if terrain else start.y
 	var cu := _custom(r[1], r[2])
 	cu.g = clock
 	cu.b = dist

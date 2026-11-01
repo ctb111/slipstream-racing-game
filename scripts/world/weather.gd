@@ -44,6 +44,10 @@ static func condition(k: Kind, is_night: bool) -> int:
 		return FOG
 	return 4 + NIGHT_KINDS.find(k) if is_night and NIGHT_KINDS.has(k) else int(k)
 
+## Added to every preset's saturation: AgX tone mapping desaturates, and the
+## owner found the look washed out (2026-11-01).
+const SAT_BOOST := 0.18
+
 ## Everything that changes with the weather, in one place.
 const PRESETS := {
 	Kind.CLEAR: {
@@ -329,14 +333,14 @@ func _build_environment(parent: Node3D) -> void:
 	env.fog_enabled = true
 	env.fog_light_color = p.fog_color
 	env.fog_density = p.fog
-	env.fog_aerial_perspective = 0.6 if not night else 0.25 # the black sky mustn't paint distant hills
+	env.fog_aerial_perspective = 0.3 if not night else 0.25 # the black sky mustn't paint distant hills; more washes the view out
 	env.fog_sky_affect = p.sky_fog
 	env.ssr_enabled = kind == Kind.STORM and q >= 2 # wet tarmac mirrors the cars and sky (High+: ~3 ms on an M1)
 	env.ssil_enabled = q >= 3
 	env.ssr_max_steps = 48
 	env.adjustment_enabled = true
-	env.adjustment_saturation = p.saturation
-	env.adjustment_contrast = 1.05
+	env.adjustment_saturation = p.saturation + SAT_BOOST
+	env.adjustment_contrast = 1.12
 	var we := WorldEnvironment.new()
 	we.environment = env
 	parent.add_child(we)

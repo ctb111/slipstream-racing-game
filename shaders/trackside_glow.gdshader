@@ -9,6 +9,7 @@ varying vec4 tint;
 varying float kind;
 varying float k;
 varying float energy;
+#include "res://shaders/crowd_react.gdshaderinc"
 
 float hash(float x) { return fract(sin(x * 91.17) * 43758.5453); }
 
@@ -18,14 +19,16 @@ void vertex() {
 	tint = COLOR;
 	energy = INSTANCE_CUSTOM.a;
 	float size = INSTANCE_CUSTOM.g;
+	float hype = crowd_hype((MODEL_MATRIX * vec4(0.0, 0.0, 0.0, 1.0)).xyz);
 	if (kind < 0.5) {
 		k = 0.75 + 0.25 * sin(TIME * 23.0 + ph * 40.0) * sin(TIME * 7.3 + ph * 11.0);
-		size *= mix(0.85, 1.1, k);
+		size *= mix(0.85, 1.1, k) * (1.0 + 0.35 * hype);
+		energy *= 1.0 + 0.9 * hype; // flares held up and burning hot as the leader / a battle passes
 	} else {
 		// a burst of 2-3 frames every few seconds, at random
 		float slot = floor(TIME * 2.2 + ph * 13.0);
 		float f = fract(TIME * 2.2 + ph * 13.0);
-		k = step(0.72, hash(slot + ph * 37.0)) * (1.0 - smoothstep(0.0, 0.16, f));
+		k = step(mix(0.72, 0.25, hype), hash(slot + ph * 37.0)) * (1.0 - smoothstep(0.0, 0.16, f));
 		size *= k;
 	}
 	vec3 c = (MODELVIEW_MATRIX * vec4(0.0, 0.0, 0.0, 1.0)).xyz;

@@ -27,7 +27,7 @@ const BRANDS := {
 const ALU := Color(0.8, 0.82, 0.84)
 const ROWS := 6 ## girth subdivisions of the printed band on the inflatable
 
-static var _led: StandardMaterial3D
+static var _led: ShaderMaterial
 
 
 static func place(c: Node3D, xf: Transform3D, opts := {}) -> void:
@@ -136,24 +136,37 @@ static func _gantry(c: Node3D, xf: Transform3D, opts: Dictionary) -> void:
 	Gx.reserve(c, xf.origin, zt + 3.0)
 
 
-## Amber LED race clock on top of the truss (both faces).
+## Amber 7-segment race clock on top of the truss (both faces), live: every
+## segment is built once, UV = (digit slot, segment bit); the shared shader
+## lights them from a 5-int mask array updated twice a second.
+const SEG := {
+	"0": "abcdef", "1": "bc", "2": "abged", "3": "abgcd", "4": "fgbc", "5": "afgcd", "6": "afgedc", "7": "abc", "8": "abcdefg", "9": "abcdfg"}
+
+
 static func _clock(c: Node3D, g: GxGeo, p: Vector3) -> Node:
 	g.col = Color(0.06, 0.06, 0.065)
 	g.box("painted_metal", p, Vector3(0.45, 1.05, 3.6), 0.02)
 	g.col = Color(0.2, 0.2, 0.2)
 	g.box("painted_metal", p - Vector3(0, 0.62, 0), Vector3(0.3, 0.2, 2.6))
 	if _led == null:
-		_led = StandardMaterial3D.new()
-		_led.albedo_color = Color(1.0, 0.55, 0.1)
-		_led.emission_enabled = true
-		_led.emission = Color(1.0, 0.5, 0.08)
-		_led.emission_energy_multiplier = 2.5
-		_led.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		var sh := Shader.new()
+		sh.code = """
+shader_type spatial;
+render_mode unshaded, fog_disabled;
+uniform int masks[5];
+void fragment() {
+	int slot = int(round(UV.x));
+	int seg = int(round(UV.y));
+	bool on = slot < 0 || ((masks[clamp(slot, 0, 4)] >> seg) & 1) == 1;
+	ALBEDO = on ? vec3(2.4, 1.2, 0.22) : vec3(0.02, 0.01, 0.003);
+}
+"""
+		_led = ShaderMaterial.new()
+		_led.shader = sh
+		_led.set_shader_parameter("masks", _masks("0:00:00"))
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var text := "0:04:37"
-	const SEG := {
-		"0": "abcdef", "1": "bc", "2": "abged", "3": "abgcd", "4": "fgbc", "5": "afgcd", "6": "afgedc", "7": "abc", "8": "abcdefg", "9": "abcdfg"}
+	var text := "0:00:00"
 	var cw := 0.38
 	var chh := 0.7
 	var total := 0.0
@@ -162,21 +175,23 @@ static func _clock(c: Node3D, g: GxGeo, p: Vector3) -> Node:
 	for f: float in [-1.0, 1.0]:
 		var d := -f # text runs towards the viewer's right
 		var zc := -total * 0.5 * d
+		var slot := 0
 		for ch in text:
 			var w := cw * (0.45 if ch == ":" else 1.0)
 			var cz := zc + w * 0.5 * d
 			var segs := []
 			if ch == ":":
-				segs = [[0.0, 0.16, 0.06, 0.06], [0.0, -0.16, 0.06, 0.06]]
+				segs = [[0.0, 0.16, 0.06, 0.06, -1], [0.0, -0.16, 0.06, 0.06, -1]]
 			else:
-				var on: String = SEG.get(ch, "")
 				var hx := 0.14
 				var hy := chh * 0.5 - 0.03
 				var t := 0.045
-				var defs := {a = [0.0, hy, hx, t], g = [0.0, 0.0, hx, t], d = [0.0, -hy, hx, t],
-					f = [-hx, hy * 0.5, t, hy * 0.5], b = [hx, hy * 0.5, t, hy * 0.5], e = [-hx, -hy * 0.5, t, hy * 0.5], c = [hx, -hy * 0.5, t, hy * 0.5]}
-				for sname in on:
-					segs.append(defs[sname])
+				var defs := {a = [0.0, hy, hx, t], b = [hx, hy * 0.5, t, hy * 0.5], c = [hx, -hy * 0.5, t, hy * 0.5],
+					d = [0.0, -hy, hx, t], e = [-hx, -hy * 0.5, t, hy * 0.5], f = [-hx, hy * 0.5, t, hy * 0.5], g = [0.0, 0.0, hx, t]}
+				var bit := 0
+				for sname: String in "abcdefg":
+					segs.append(defs[sname] + [bit])
+					bit += 1
 			for sg: Array in segs:
 				var zz: float = cz + sg[0] * d
 				var yy: float = p.y + sg[1]
@@ -185,13 +200,38 @@ static func _clock(c: Node3D, g: GxGeo, p: Vector3) -> Node:
 				var hy2: float = sg[3] - 0.012
 				var v := [Vector3(x, yy + hy2, zz - hz), Vector3(x, yy + hy2, zz + hz), Vector3(x, yy - hy2, zz + hz), Vector3(x, yy - hy2, zz - hz)]
 				st.set_normal(g.xf.basis * Vector3(f, 0, 0))
+				st.set_uv(Vector2(-1.0 if int(sg[4]) < 0 else float(slot), maxf(float(sg[4]), 0.0)))
 				var order := [0, 1, 2, 0, 2, 3] if f < 0.0 else [0, 2, 1, 0, 3, 2]
 				for k: int in order:
 					st.add_vertex(g.xf * v[k])
+			if ch != ":":
+				slot += 1
 			zc += w * d
 	var mi := Gx.add_mesh(c, st, _led, "GxGantryClock", 600.0)
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	if GxLive.off():
+		return mi
+	var race := [null]
+	GxLive.every(mi, 0.5, func() -> void:
+		if race[0] == null:
+			race[0] = GxLive.race(mi)
+		if race[0]:
+			_led.set_shader_parameter("masks", _masks(GxLive.hms(float(race[0].race_time)))))
 	return mi
+
+
+## Segment bit masks of the five digits of "H:MM:SS".
+static func _masks(text: String) -> PackedInt32Array:
+	var out := PackedInt32Array()
+	for ch in text:
+		if ch == ":":
+			continue
+		var m := 0
+		for sname: String in SEG.get(ch, ""):
+			m |= 1 << "abcdefg".find(sname)
+		out.append(m)
+	out.resize(5)
+	return out
 
 
 # ---------------------------------------------------------------- inflatable

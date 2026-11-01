@@ -23,7 +23,7 @@ fi
 # Watchdog: a hung run must never hold the lock for long (LIMIT seconds, default 300).
 tag="--bgrun-id=$$"
 [[ " $* " == *" -- "* ]] || set -- "$@" --
-( /bin/sleep ${LIMIT:-300}; pkill -f -- "$tag" && echo "bgrun: killed after ${LIMIT:-300}s" >> "$log" ) &
+( exec >/dev/null 2>&1; /bin/sleep ${LIMIT:-300}; pkill -f -- "$tag" && echo "bgrun: killed after ${LIMIT:-300}s" >> "$log" ) & # no stdout: a caller reading our output must not wait for the timer
 dog=$!
 open -g -W -n -a /Applications/Godot.app "${envs[@]}" --stdout "$log" --stderr "$log" --args "${args[@]}" "$@" "$tag"
 kill $dog 2>/dev/null

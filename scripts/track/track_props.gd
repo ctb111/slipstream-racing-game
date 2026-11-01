@@ -122,7 +122,7 @@ func at(i: int, lateral: float, height := 0.0) -> Vector3:
 	var k := _i(i)
 	var p := centers[k] + rights[k] * lateral
 	if terrain and absf(lateral) > half + 1.5:
-		p.y = terrain.height_at(p.x, p.z)
+		p.y = terrain.surface_at(p.x, p.z)
 	return p + Vector3.UP * height
 
 
@@ -437,6 +437,14 @@ func _start_finish() -> void:
 	_box("dark_metal", beam, Vector3(d * 2.0 + 0.6, 1.1, 0.8), basis)
 	_face("print", beam - t * 0.42 + Vector3.UP * 1.25, r, Vector3.UP, 9.0, 1.1, uv.start)
 	_box("dark_metal", beam + Vector3.UP * 1.25 - t * 0.3, Vector3(9.1, 1.2, 0.1), basis)
+	# Live LED boards either side of the lights, the finish celebration at the pillars.
+	var bw := clampf(d - 2.4, 1.4, 3.4)
+	var bx := 1.95 + bw * 0.5
+	for side: float in [-1.0, 1.0]:
+		_box("dark_metal", beam - t * 0.43 + r * bx * side, Vector3(bw, 0.8, 0.06), basis)
+	if not GxLive.off():
+		StartBoard.add(parent, beam - t * 0.47 - r * bx, beam - t * 0.47 + r * bx, basis, bw)
+		FinishFx.add(parent, at(0, -d, 7.5), at(0, d, 7.5), beam + Vector3.UP * 2.0)
 	var lights := []
 	for k in 5:
 		var lamp := StandardMaterial3D.new()
@@ -735,7 +743,9 @@ func _catch_fence(i0: int, i1: int, side: float) -> void:
 		u += seg
 		if i % 2 == 0:
 			_box("metal", a + Vector3.UP * h * 0.5, Vector3(0.07, h, 0.07))
-	no_trees.append([at((i0 + i1) / 2, side * (rail_dist((i0 + i1) / 2, side) + 2.0)), (i1 - i0) * STEP * 0.5 + 6.0])
+	# Keep trees off the fence line only (one big circle cleared a 56 m hole at every corner).
+	for i in range(i0, i1 + 1, 3):
+		no_trees.append([at(i, side * (rail_dist(i, side) + 1.6)), 4.0])
 
 
 # ---------------------------------------------------------------- advertising & marshals

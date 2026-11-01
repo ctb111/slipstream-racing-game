@@ -43,6 +43,7 @@ static func dress(c: Node3D) -> void:
 	if dbg:
 		print("DRESS valtellina lap ", lap, " runs ", runs)
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- start: sponsor gantry, banners, tifosi flags, painted names
 	if _place("gx_sponsor_arch", c, Gx.road_frame(c, 60.0), {kind = "gantry", brand = "marzelli", brand2 = "valter"}):
 		used.append(60.0)
@@ -56,6 +57,7 @@ static func dress(c: Node3D) -> void:
 	for t: Array in [[30.0, "FORZA ROSSI"], [55.0, "MANCINI"], [80.0, "VAI CASTELL!"]]:
 		_place("gx_road_text", c, Gx.road_frame(c, t[0]), {text = t[1], color = "white" if t[0] < 50.0 else "yellow"})
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- over / through the road on the long straights
 	var plan := [["gx_overpass", {kind = "road", banner = "b_valter"}, 26.0],
 		["gx_warehouse", {kind = "warehouse", length = 54.0}, 32.0],
@@ -82,6 +84,7 @@ static func dress(c: Node3D) -> void:
 			if not k.reserved(c, yf.origin + yf.basis.z * 20.0, 18.0):
 				_place("gx_industrial", c, yf, {kind = "containers", width = 40.0, depth = 26.0, crane = false})
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- tifosi on the corners
 	var sheets := ["f_rossi", "f_rossi", "f_weber", "f_duval", "f_hopp", "f_rossi", "f_lind", ""]
 	var n_banks := 0
@@ -105,6 +108,7 @@ static func dress(c: Node3D) -> void:
 			_place("gx_billboard", c, Gx.frame(c, along - 50.0, -turn, k.rail_lat(c, along - 50.0, -turn)), {kind = "sign", sign = "chevron", count = 3})
 		n_banks += 1
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- billboards along the straights
 	var bb := 0
 	for s in runs:
@@ -117,6 +121,7 @@ static func dress(c: Node3D) -> void:
 			_place("gx_billboard", c, f, {brand = bb * 2 + 1})
 			bb += 1
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- parked cars, camps, heli
 	var camps := 0
 	for i in 40:
@@ -140,6 +145,7 @@ static func dress(c: Node3D) -> void:
 			Gx.reserve(c, f.origin, 12.0)
 			rows += 1
 	_castle(c, rng)
+	await Gx.breath(c) # let the loading screen draw
 	# motorway-style sign gantry with fun destinations, a church spire on the hill
 	var sg: float = -1.0 # sign gantry off: valtellina is at the frame budget
 	if sg >= 0.0 and _place("gx_sign_gantry", c, Gx.road_frame(c, sg), {}):

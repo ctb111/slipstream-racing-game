@@ -11,6 +11,7 @@ extends RefCounted
 ##   banner    TracksideUV.SIGNS key hung on both fascias (e.g. "b_valter"); "" = none
 ##   paint     Color of painted steel (rail girders, truss, lamp posts)
 ##   ramps     false = no approach ramps (road kind); lamps = false: no lamp posts
+##   train     true = moving train across the rail bridge (default: true for rail)
 ## Clearance >= 5.8 m above the highest road point under the deck; piers outside
 ## road + kerb + 1.5 m, with collision. Trees are kept clear.
 
@@ -267,6 +268,13 @@ static func _rail(c: Node3D, g: GxGeo, xf: Transform3D, W: float, zp: float, ze:
 	for s: float in [-1.0, 1.0]:
 		g.sign(Vector3(s * (hx + 0.06), soffit + gd * 0.55, 0), Vector3(s, 0, 0), 3.2, 0.0, opts.get("plaque", "p_rail"))
 	_banner(g, opts, hx + 0.08, soffit - 0.0)
+	if opts.get("train", true) and ResourceLoader.exists("res://scripts/track/gimmicks/gx_train.gd"):
+		var topts: Dictionary = opts.duplicate()
+		topts.soffit = soffit
+		topts.ze = ze
+		topts.W = W
+		topts.top = top
+		load("res://scripts/track/gimmicks/gx_train.gd").place(c, xf, topts)
 
 
 ## Concrete piers + abutments for the steel bridges.

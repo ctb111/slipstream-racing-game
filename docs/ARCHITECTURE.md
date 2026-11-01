@@ -461,7 +461,7 @@ First run picks Medium on Apple GPUs, High elsewhere (`game.gd:94-96`).
 | `controls` | `bindings` (action -> `{keys = [k0, k1], pad = {...}}`, see `InputSetup`) |
 
 Other files in `user://`: championship state and time-trial ghosts (`ModeStore`, under `user://test/` for
-debug runs), and the loading screen's learnt step timings (`user://load_profile.cfg`, `LoadingScreen`). Runs with user args never write
+debug runs). Runs with user args never write
 `settings.cfg`.
 
 ---

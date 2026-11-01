@@ -11,6 +11,7 @@ uniform float life = 6.0;
 uniform vec3 wind_dir = vec3(0.8, 0.0, 0.35);
 uniform float wind = 0.5;
 #include "res://shaders/weather.gdshaderinc"
+#include "res://shaders/crowd_react.gdshaderinc"
 uniform sampler2D puff_noise : filter_linear_mipmap, repeat_enable;
 
 varying float age;
@@ -25,13 +26,17 @@ void vertex() {
 	age = t;
 	tint = COLOR;
 	glow = INSTANCE_CUSTOM.b;
+	// Flares (glow > 0) pour out thicker, brighter smoke while the crowd is up.
+	float hype = glow > 0.0 ? crowd_hype((MODEL_MATRIX * vec4(0.0, 0.0, 0.0, 1.0)).xyz) : 0.0;
+	tint.a = min(tint.a * (1.0 + 0.7 * hype), 1.0);
+	glow *= 1.0 + 1.2 * hype;
 	seed = ph * 17.0 + float(INSTANCE_ID) * 0.37;
 	float tl = t * lf;
 	vec3 jitter = vec3(sin(seed * 7.1), 0.0, cos(seed * 5.3)) * 0.6 * t;
 	float wnd = max(wind, wx_wind * 1.6);
 	vec3 wdir = vec3(WX_DIR.x, 0.0, WX_DIR.y);
 	vec3 drift = vec3(0.0, rise * tl * (1.0 - 0.25 * t), 0.0) + wdir * (0.5 + 3.0 * wnd) * tl * t * 0.5 + jitter;
-	float size = mix(0.35, 2.6, sqrt(t)) * INSTANCE_CUSTOM.g;
+	float size = mix(0.35, 2.6, sqrt(t)) * INSTANCE_CUSTOM.g * (1.0 + 0.3 * hype);
 	vec3 c = (MODELVIEW_MATRIX * vec4(drift, 1.0)).xyz;
 	float a = seed * 3.0 + t * 0.8;
 	vec2 q = mat2(vec2(cos(a), sin(a)), vec2(-sin(a), cos(a))) * VERTEX.xy;

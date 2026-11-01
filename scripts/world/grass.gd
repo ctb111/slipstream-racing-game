@@ -79,9 +79,9 @@ static func build(parent: Node3D, curve: Curve3D, terrain: Terrain, road_width: 
 						continue
 					var up := Vector3.UP
 					if terrain:
-						p.y = terrain.height_at(p.x, p.z) - 0.03
-						var hx := terrain.height_at(p.x + 1.0, p.z) - p.y - 0.03
-						var hz := terrain.height_at(p.x, p.z + 1.0) - p.y - 0.03
+						p.y = terrain.surface_at(p.x, p.z) - 0.03
+						var hx := terrain.surface_at(p.x + 1.0, p.z) - p.y - 0.03
+						var hz := terrain.surface_at(p.x, p.z + 1.0) - p.y - 0.03
 						up = Vector3(-hx, 1.0, -hz).normalized()
 					var s := rng.randf_range(0.8, 1.2)
 					var b := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s, s * rng.randf_range(0.8, 1.25), s))

@@ -273,8 +273,6 @@ func _read_local_input(dt: float) -> void:
 	handbrake = Input.is_action_pressed("handbrake")
 	if Input.is_action_just_pressed("toggle_gearbox"):
 		automatic = not automatic
-	if Input.is_action_just_pressed("toggle_assists"):
-		set_assists(not assist_abs)
 	if Input.is_action_just_pressed("shift_up") and gear < gear_ratios.size():
 		_set_gear(gear + 1)
 	if Input.is_action_just_pressed("shift_down") and gear > -1:

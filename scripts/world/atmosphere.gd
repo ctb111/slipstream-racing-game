@@ -76,8 +76,8 @@ static func build(parent: Node3D, _curve: Curve3D, road_width: float, preset: Di
 			a._mist_plane(terrain, level + k * 4.0, mist * (0.9 if k == 0 else 0.55), mist_col, sun_col, sun_dir, k * 0.37)
 	if haze > 0.0 and w.kind != Weather.Kind.STORM and w.kind != Weather.Kind.SNOW:
 		# Dry-day haze: the air towards a low sun glows; distance goes warm and soft.
-		env.fog_sun_scatter = 0.18 * haze * clampf(1.4 - float(preset.get("sun_elev", 30.0)) / 50.0, 0.3, 1.2)
-		env.fog_aerial_perspective = minf(env.fog_aerial_perspective + 0.15 * haze, 0.9)
+		env.fog_sun_scatter = 0.05 * haze * clampf(1.4 - float(preset.get("sun_elev", 30.0)) / 50.0, 0.3, 1.2)
+		env.fog_aerial_perspective = minf(env.fog_aerial_perspective + 0.05 * haze, 0.5) # kept low: a strong veil reads as washed out
 	var low_sun := float(preset.get("sun_elev", 45.0)) < 30.0
 	if not night and (haze > 0.0 or mist > 0.0) and low_sun and w.kind != Weather.Kind.STORM \
 			and w.kind != Weather.Kind.SNOW and w.kind != Weather.Kind.FOG and not args.has("--nomotes") and MOTES[clampi(Game.quality, 0, 3)] > 0:

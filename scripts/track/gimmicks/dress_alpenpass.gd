@@ -28,6 +28,7 @@ static func dress(c: Node3D) -> void:
 		load(P % "dress_shots").attach(c)
 	var rng := Gx.rng(c, "dress")
 	var L := Gx.length(c)
+	await Gx.breath(c) # let the loading screen draw
 	# --- hairpins: fan banks outside, photographers inside, chevrons ---------------
 	var banners := ["f_rossi", "f_weber", "f_lind", "f_hopp", "f_duval"]
 	var made := 0
@@ -58,11 +59,13 @@ static func dress(c: Node3D) -> void:
 		if _has("gx_billboard"):
 			_put(c, "gx_billboard", Gx.frame(c, along - 22.0, side, 17.0), {kind = "sign", sign = "chevron", count = 3})
 		made += 1
+	await Gx.breath(c) # let the loading screen draw
 	# --- cheers painted up the climb and over the summit -----------------------------
 	if _has("gx_road_text"):
 		for b: Array in [[620.0, "HOPP HOPP"], [780.0, "ALLEZ!"], [1100.0, "FORZA"], [1420.0, "WEBER"], [1750.0, "VOLLGAS"],
 				[1950.0, "GO GO GO"], [2600.0, "LIND"], [3050.0, "FLAT OUT"]]:
 			_put(c, "gx_road_text", Gx.road_frame(c, b[0]), {text = b[1]})
+	await Gx.breath(c) # let the loading screen draw
 	# --- start: sponsor gantry; village: beer garden and maypole -------------------
 	_put(c, "gx_sponsor_arch", Gx.road_frame(c, -14.0), {kind = "gantry", brand = "start", brand2 = "helios"})
 	_put(c, "gx_fans", Gx.frame(c, 0.0, Gx.RIGHT, 3.0), {kind = "banners", length = 60.0})
@@ -79,6 +82,7 @@ static func dress(c: Node3D) -> void:
 	if _has("gx_billboard"):
 		_put(c, "gx_billboard", Gx.frame(c, L - 260.0, Gx.RIGHT, 2.0), {kind = "sign", sign = "village", speed = 50})
 		_put(c, "gx_billboard", Gx.frame(c, 330.0, Gx.LEFT, 6.0), {brand = 2})
+	await Gx.breath(c) # let the loading screen draw
 	# --- the pass: camps, parked cars, a drone over the summit -------------------
 	if _has("gx_spot"):
 		var summit: Array = []
@@ -97,6 +101,7 @@ static func dress(c: Node3D) -> void:
 		if dxf != null and _has("gx_camp"):
 			GxCamp.place(c, dxf, {size = "small", seed = 8})
 	_wall_rocks(c, rng, L)
+	await Gx.breath(c) # let the loading screen draw
 	# --- chairlift up the mountain over the summit road ---------------------------
 	if _has("gx_skilift"):
 		load(P % "gx_skilift").line(c, Vector3(-150, 0, -120), Vector3(-760, 0, -250), {})

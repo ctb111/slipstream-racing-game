@@ -94,6 +94,7 @@ static func dress(c: Node3D) -> void:
 	_shadows(c)
 	_night_city(c)
 	var used: Array = []
+	await Gx.breath(c) # let the loading screen draw
 	# Drive-through brick warehouse (theme site at 350, 190).
 	if _has("gx_warehouse"):
 		var a := _at(c, 350, 190)

@@ -210,7 +210,7 @@ func _frame(offset: float) -> Transform3D:
 
 
 func _ground(p: Vector3) -> float:
-	return _terrain.height_at(p.x, p.z) if _terrain else p.y
+	return _terrain.surface_at(p.x, p.z) if _terrain else p.y
 
 
 ## Finds the Race (grandparent, or the current scene) and hooks its signals.

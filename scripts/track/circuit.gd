@@ -16,6 +16,7 @@ const EXTRA_BUILDERS := [
 	"res://scripts/track/set_dressing.gd",
 	"res://scripts/track/themes.gd",
 	"res://scripts/world/ambience.gd",
+	"res://scripts/world/crowd_react.gd",
 	"res://scripts/track/road_decals.gd",
 	"res://scripts/track/night_lights.gd",
 	"res://scripts/world/atmosphere.gd",

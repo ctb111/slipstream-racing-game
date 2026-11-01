@@ -119,7 +119,7 @@ func rail_dist(i: int, side: float) -> float:
 
 
 func _gy(p: Vector3) -> float:
-	return terrain.height_at(p.x, p.z) if terrain else p.y
+	return terrain.surface_at(p.x, p.z) if terrain else p.y
 
 
 ## Behind the rails of every nearby stretch of track (not in a trap or on a road).

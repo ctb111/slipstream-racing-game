@@ -219,7 +219,7 @@ static func _shore_band(c: Node3D, level: float) -> void:
 	var span: float = (Terrain.N - 1) * (t as Terrain).cell
 	var o: Vector2 = (t as Terrain).origin
 	var step := 30.0
-	var wet := func(x: float, z: float) -> bool: return (t as Terrain).height_at(x, z) < level + 0.6
+	var wet := func(x: float, z: float) -> bool: return (t as Terrain).surface_at(x, z) < level + 0.6
 	var n := 0
 	var x := o.x
 	while x < o.x + span:

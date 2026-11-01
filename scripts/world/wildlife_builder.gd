@@ -124,7 +124,7 @@ func _n(base: int) -> int:
 
 
 func _ground(p: Vector3) -> Vector3:
-	p.y = terrain.height_at(p.x, p.z) if terrain else p.y
+	p.y = terrain.surface_at(p.x, p.z) if terrain else p.y
 	return p
 
 

@@ -5,6 +5,7 @@ extends Node
 ##                                      `along` m round the lap, looking 70 m ahead
 ##   --dress_cam=x,y,z,lx,ly,lz;...     free views (world position ; look-at)
 ##   --dress_t0=8                       seconds to wait before the first shot
+##   --dress_n=8                        driver-height views at N even steps round the whole lap
 ##   --dress_side=300,-640               close-ups of the roadside: from the road edge `along`
 ##                                      m round the lap, looking at the right (+) / left (-) side
 ## Added by dress_<track>.gd via DressShots.attach(c); does nothing without the args.
@@ -36,6 +37,11 @@ static func attach(c: Node3D) -> void:
 					cams.append([Vector3(f[0], f[1], f[2]), Vector3(f[3], f[4], f[5])])
 		elif a.begins_with("--dress_side="):
 			sides = a.get_slice("=", 1).split_floats(",")
+		elif a.begins_with("--dress_n="):
+			var cnt := int(a.get_slice("=", 1))
+			var l := Gx.curve(c).get_baked_length()
+			for k in cnt:
+				at.append(l * k / float(cnt))
 		elif a.begins_with("--dress_t0="):
 			t0 = float(a.get_slice("=", 1))
 	if prefix_arg == "":

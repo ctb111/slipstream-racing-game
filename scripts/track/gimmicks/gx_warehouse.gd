@@ -48,6 +48,10 @@ static func place(c: Node3D, xf: Transform3D, opts := {}) -> void:
 		var p := F * Vector3(-L * 0.5 + L * i / n, 0, 0)
 		Gx.reserve(c, p, HALF_IN + 8.0)
 
+	# Harbour life (tugboat along harbour basin on harbour circuits like Hafenstadt)
+	if ResourceLoader.exists("res://scripts/track/gimmicks/gx_harbour_life.gd"):
+		load("res://scripts/track/gimmicks/gx_harbour_life.gd").maybe_place(c)
+
 
 ## Extra camera views for gx_test: approach, inside, racks, exit.
 static func views(c: Node3D, xf: Transform3D, opts: Dictionary) -> Array:
@@ -444,6 +448,11 @@ static func _hall(c: Node3D, holder: Node3D, F: Transform3D, L: float, rng: Rand
 
 	var body_e := GxProps.commit(g, holder, "WhShell", 900.0, true)
 	var body_i := GxProps.commit(gi, holder, "WhInside", 160.0, false)
+
+	# Dynamic warehouse/barn interior life (forklift, rotating beacon, hoist, ceiling fans)
+	if ResourceLoader.exists("res://scripts/track/gimmicks/gx_warehouse_life.gd"):
+		var fl_y: float = minf(maxf(_gy(c, F, 0, 14.5), 0.0), 0.6) + 0.04
+		load("res://scripts/track/gimmicks/gx_warehouse_life.gd").place(holder, F, L, eave, ridge, barn, fl_y)
 	for mi in holder.get_children():
 		if mi is MeshInstance3D and String(mi.name).begins_with("WhInside"):
 			# the interior's big structure still reads from outside through the doors

@@ -194,7 +194,7 @@ func rail_dist(i: int, side: float) -> float:
 
 
 func _gy(p: Vector3) -> float:
-	return terrain.height_at(p.x, p.z) if terrain else p.y
+	return terrain.surface_at(p.x, p.z) if terrain else p.y
 
 
 ## Point `lateral` metres off the centreline at sample `i`, on the ground.

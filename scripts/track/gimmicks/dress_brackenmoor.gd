@@ -14,6 +14,7 @@ const H := preload("res://scripts/track/gimmicks/lm_dress_b.gd")
 static func dress(c: Node3D) -> void:
 	load(H.DIR % "dress_shots").attach(c)
 	var busy: Array = [0.0] # alongs taken (start gantry at 0)
+	await Gx.breath(c) # let the loading screen draw
 	# --- over / through the road ---------------------------------------------
 	if H.has("gx_overpass"): # riveted rail bridge early on the main straight
 		var xf := Gx.road_frame(c, 95.0)
@@ -37,6 +38,7 @@ static func dress(c: Node3D) -> void:
 		busy.append(1120.0)
 	H.put(c, "gx_sponsor_arch", Gx.road_frame(c, 1040.0), {kind = "inflatable", brand = "helios"})
 	busy.append(1040.0)
+	await Gx.breath(c) # let the loading screen draw
 	# --- landmarks -----------------------------------------------------------------
 	load(H.DIR % "gx_pylons").line(c, Vector3(-170, 0, -40), Vector3(700, 0, 70), {spacing = 125.0})
 	H.put(c, "gx_turbine", Gx.frame(c, 700.0, Gx.RIGHT, 150.0), {count = 4, spacing = 170.0})
@@ -47,6 +49,7 @@ static func dress(c: Node3D) -> void:
 		H.views(c, [[px * Vector3(-8, 0, -18), px * Vector3(0, 0, 4)]])
 		busy.append(1225.0)
 	H.put(c, "gx_hospitality", Gx.frame(c, 40.0, Gx.RIGHT, 6.0), {})
+	await Gx.breath(c) # let the loading screen draw
 	# --- fans with flares at every real corner (storm = red smoke everywhere) ------
 	var banks := [[364.0, 24, 3, "f_lind"], [1864.0, 24, 3, "f_weber"], [868.0, 20, 2, "f_novak"],
 		[1444.0, 20, 2, "f_hopp"], [1768.0, 16, 2, ""], [1252.0, 16, 2, "f_duval"], [780.0, 14, 2, ""],
@@ -60,15 +63,18 @@ static func dress(c: Node3D) -> void:
 		H.put(c, "gx_billboard", Gx.frame(c, along, side, 1.5), {kind = "sign", sign = "chevron", count = 3})
 		busy.append(along)
 	H.put(c, "gx_fans", Gx.frame(c, 0.0, Gx.LEFT, 3.0), {kind = "banners", length = 70.0})
+	await Gx.breath(c) # let the loading screen draw
 	# --- camps on the moor -------------------------------------------------------
 	H.put(c, "gx_camp", Gx.frame(c, 905.0, H.outside(c, 868.0), 18.0), {size = "large", seed = 3})
 	H.put(c, "gx_camp", Gx.frame(c, 1830.0, Gx.RIGHT, 22.0), {size = "large", seed = 11})
 	H.put(c, "gx_parked_cars", Gx.frame(c, 330.0, Gx.LEFT, 14.0), {count = 6})
 	busy.append_array([905.0, 1830.0, 330.0])
+	await Gx.breath(c) # let the loading screen draw
 	# --- the rest of the lap: something every ~140 m, alternating sides ----------
 	H.fill(c, busy, 200.0, ["billboard", "bank", "graffiti", "cars", "bank_big", "works", "flags", "camp", "photo"],
 		{flares = 2, brands = [0, 2, 3, 5, 6, 7], flag_keys = ["flag_ie", "flag_de", "flag_fi", "flag_fan"]})
 	H.put(c, "gx_billboard", Gx.frame(c, 1180.0, Gx.RIGHT, 2.0), {kind = "sign", sign = "village", speed = 50})
+	await Gx.breath(c) # let the loading screen draw
 	# --- names painted in every braking zone --------------------------------------
 	H.put(c, "gx_road_text", Gx.road_frame(c, 1400.0), {text = "FLAT OUT", color = "yellow"})
 	H.braking_text(c, ["GO LIND", {kind = "player"}, "WEBER!", {kind = "allez"}, "BRAKE LATE", {kind = "heart"},

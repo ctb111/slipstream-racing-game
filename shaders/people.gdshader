@@ -18,6 +18,7 @@ uniform vec3 pivot = vec3(0.2, 1.45, 0.0);
 // Ambient wind 0 calm .. 1 storm (marshal flags; they also fly from being waved).
 uniform float wind = 0.35;
 #include "res://shaders/weather.gdshaderinc"
+#include "res://shaders/crowd_react.gdshaderinc"
 
 varying flat float region;
 varying float lum_mean;
@@ -29,6 +30,8 @@ varying flat vec3 c_hat;
 varying flat vec3 c_shoes;
 varying flat vec3 c_flag;
 varying flat float keep_bottom;
+varying flat float chequer; // 1: the finish marshal (INSTANCE_CUSTOM.a) showing the chequered flag
+varying vec2 cloth;
 
 vec3 to_linear(vec3 c) {
 	return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(vec3(0.04045), c));
@@ -52,6 +55,11 @@ void vertex() {
 	lum_mean = CUSTOM0.w;
 	float id = INSTANCE_CUSTOM.r;
 	float cheer = INSTANCE_CUSTOM.g;
+	vec3 wp = (MODEL_MATRIX * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+	// Live reaction (CrowdReact): amplitudes only; the tempo stays tied to the
+	// static excitement, or a changing rate would make TIME * rate jump.
+	float react = crowd_hype(wp) * (0.65 + 0.35 * hash(id, 6.0));
+	float amp = max(cheer, react);
 	float h1 = hash(id, 1.0), h2 = hash(id, 2.0), h3 = hash(id, 3.0), h4 = hash(id, 4.0), h5 = hash(id, 5.0);
 
 	// Wardrobe (sRGB, converted once per vertex).
@@ -74,6 +82,8 @@ void vertex() {
 		bottom = top * 0.85;
 		hat = top;
 	}
+	chequer = 0.0;
+	cloth = vec2(CUSTOM0.w - 1.0, CUSTOM0.z);
 	c_top = to_linear(top);
 	c_bottom = to_linear(bottom);
 	c_skin = skin;
@@ -81,7 +91,24 @@ void vertex() {
 	c_hair = to_linear(hair);
 	c_hat = to_linear(hat);
 	c_shoes = to_linear(shoes);
-	c_flag = to_linear(COLOR.rgb);
+	vec3 flag = COLOR.rgb;
+	float wave_m = cheer;
+	if (role == 2) {
+		// Yellow-flag marshals hold the flag still until there is an incident
+		// in their sector; then every marshal there waves yellow, hard.
+		bool yellow = flag.r > 0.6 && flag.b < 0.3;
+		float idle = yellow ? min(cheer, 0.12) : cheer;
+		float y = marshal_yellow(wp);
+		if (INSTANCE_CUSTOM.a > 0.5) {
+			chequer = 1.0;
+			idle = 0.0;
+			y = marshal_chequer.w;
+		} else if (y > 0.5) {
+			flag = vec3(0.9, 0.72, 0.08);
+		}
+		wave_m = mix(idle, 1.0, y);
+	}
+	c_flag = to_linear(flag);
 
 	vec3 v = VERTEX;
 	vec3 n = NORMAL;
@@ -90,16 +117,16 @@ void vertex() {
 	float side = CUSTOM0.z * 2.0 - 1.0;
 	if (motion == 1) {
 		// Fists pumping, a little out of step between the arms; jumps.
-		v.y += arm * sin(t + side * 1.2) * 0.09 * (0.3 + cheer);
-		v.x += arm * side * cos(t) * 0.03;
-		v.y += max(sin(t * 0.5), 0.0) * 0.09 * cheer;
+		v.y += arm * sin(t + side * 1.2) * 0.09 * (0.3 + amp);
+		v.x += arm * side * cos(t) * 0.03 * (1.0 + react);
+		v.y += max(sin(t * 0.5), 0.0) * 0.09 * amp + max(sin(t), 0.0) * 0.07 * react;
 	} else if (motion == 2) {
 		// Hands clap together in front of the chest.
 		float c = 0.5 + 0.5 * sin(t * 2.0);
 		v.x += arm * side * c * 0.06;
-		v.y += max(sin(t * 0.37), 0.0) * 0.03 * cheer;
+		v.y += max(sin(t * 0.37), 0.0) * 0.03 * cheer + max(sin(t * 0.9), 0.0) * 0.07 * react;
 	} else if (motion == 3) {
-		float wave = cheer;
+		float wave = wave_m;
 		float tf = TIME * 6.0 + id * 6.2831;
 		float a = (-0.15 + sin(tf) * 0.7 * wave) * clamp(arm * 1.6, 0.0, 1.0);
 		if (region > 6.5 && region < 7.5) {
@@ -129,7 +156,10 @@ void vertex() {
 		n = rot_z(n, a);
 	} else if (motion == 4) {
 		v.z -= sin(TIME * 0.6 + id * 20.0) * 0.02 * v.y;
-		v.y += arm * max(sin(t), 0.0) * 0.08 * cheer;
+		v.y += arm * max(sin(t), 0.0) * 0.08 * amp;
+	} else if (motion == 0) {
+		// Standing fans bob on their toes as the cars that matter come by.
+		v.y += max(sin(t * 1.3), 0.0) * 0.06 * react;
 	}
 	// Weight shifting / idle sway around the feet.
 	v.x += v.y * sin(TIME * 0.6 + id * 17.0) * 0.012;
@@ -165,6 +195,10 @@ void fragment() {
 		c = c_hat * dc;
 	} else if (region < 7.5) {
 		c = c_flag;
+		if (chequer > 0.5) {
+			vec2 q = floor(cloth * vec2(6.0, 4.0));
+			c = mod(q.x + q.y, 2.0) < 0.5 ? vec3(0.02) : vec3(0.75);
+		}
 		rough = 0.8;
 		BACKLIGHT = c * 0.35; // light shines through the cloth
 	} else {

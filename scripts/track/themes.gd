@@ -190,7 +190,7 @@ func _off_track(p: Vector3, margin: float) -> bool:
 
 
 func _ground(p: Vector3) -> float:
-	return terrain.height_at(p.x, p.z) if terrain else p.y
+	return terrain.surface_at(p.x, p.z) if terrain else p.y
 
 
 func _on_ground(p: Vector3, lift := 0.0) -> Vector3:

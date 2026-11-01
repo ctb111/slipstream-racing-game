@@ -28,6 +28,7 @@ static func _busy(along: float) -> bool:
 static func dress(c: Node3D) -> void:
 	load("res://scripts/track/gimmicks/dress_shots.gd").attach(c) # debug views (only with --dress_shots)
 	var rng := Gx.rng(c, "dress")
+	await Gx.breath(c) # let the loading screen draw
 	# --- fans at the best corners (outside), flares and Italian/French flags ----
 	if _has("gx_fans"):
 		var banners := ["f_rossi", "f_duval", "f_weber", "f_lind", "f_hopp"]
@@ -47,6 +48,7 @@ static func dress(c: Node3D) -> void:
 			made += 1
 		_put(c, "gx_fans", Gx.frame(c, 0.0, Gx.RIGHT, 3.0), {kind = "banners", length = 60.0})
 		_put(c, "gx_fans", Gx.frame(c, 1460.0, Gx.LEFT, 4.0), {kind = "flags", count = 4, keys = ["flag_it", "flag_fr"]})
+	await Gx.breath(c) # let the loading screen draw
 	# --- painted names and cheers on the climb and the cliff road ---------------
 	if _has("gx_road_text"):
 		for b: Array in [[1060.0, "FORZA"], [1250.0, "VAI!"], [1990.0, "ROSSI"], [2420.0, "ALLEZ!"], [2700.0, "FLAT OUT"]]:
@@ -55,6 +57,7 @@ static func dress(c: Node3D) -> void:
 		var kit := TracksideKit.shared(c)
 		for a: float in [1040.0, 1980.0, 2400.0]:
 			kit.road_messages(kit.idx(a), 4)
+	await Gx.breath(c) # let the loading screen draw
 	# --- graffiti on retaining walls up the climb ----------------------------------
 	if _has("gx_graffiti"):
 		for g: Array in [[1120.0, 28.0, 1], [1330.0, 22.0, 2], [2240.0, 18.0, 3]]:

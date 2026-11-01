@@ -36,11 +36,13 @@ static func dress(c: Node3D) -> void:
 	var tunnel_out := _along(c, 515, -400)
 	var tunnel_in := _along(c, 430, -401)
 
+	await Gx.breath(c) # let the loading screen draw
 	# Forest camps just behind the fence on the crests (the classic jump spot).
 	_place("gx_camp", c, Gx.frame(c, crest1 + 30.0, R, 9.0), {size = "large"})
 	_place("gx_camp", c, Gx.frame(c, crest2 + 25.0, L, 9.0), {size = "small"})
 	_place("gx_camp", c, Gx.frame(c, tunnel_out + 70.0, L, 9.0), {size = "small", cars = false})
 
+	await Gx.breath(c) # let the loading screen draw
 	# Fans with flares round the outside of the hairpin, photographers inside.
 	var turn := _turn_at(c, hairpin)
 	_place("gx_fans", c, Gx.frame(c, hairpin + 4.0, -turn, 9.0), {count = 30, flares = 3, flags = 3, depth = 6.0})
@@ -48,11 +50,13 @@ static func dress(c: Node3D) -> void:
 	_place("gx_fans", c, Gx.frame(c, hairpin - 6.0, turn, 6.0), {kind = "photographers"})
 	_place("gx_fans", c, Gx.frame(c, crest1 - 10.0, L, 6.0), {kind = "photographers"})
 
+	await Gx.breath(c) # let the loading screen draw
 	# Painted fan messages on the crest straight and the hairpin braking zone.
 	_place("gx_road_text", c, Gx.road_frame(c, crest1 - 60.0), {})
 	_place("gx_road_text", c, Gx.road_frame(c, crest2 - 45.0), {kind = "player"})
 	_place("gx_road_text", c, Gx.road_frame(c, hairpin - 120.0), {kind = "allez"})
 
+	await Gx.breath(c) # let the loading screen draw
 	# Graffiti on the tunnel portal faces (the stone around the arch).
 	var gpath := P % "gx_graffiti"
 	if ResourceLoader.exists(gpath):
@@ -67,5 +71,6 @@ static func dress(c: Node3D) -> void:
 				var b := Basis.looking_at(out, Vector3.UP) # -z out of the face, towards the viewer
 				g.spray(c, Transform3D(b, p), Vector2(5.0, 2.2))
 
+	await Gx.breath(c) # let the loading screen draw
 	# The TV helicopter.
 	_place("gx_heli", c, Gx.road_frame(c, hairpin), {})

@@ -33,6 +33,17 @@ var _kind := "heli"
 var _home := Vector3.ZERO
 var _t := 0.0
 var _roll := 0.0
+# searchlight (night / storm): additive cone + ground pool, aimed at 4 Hz
+var _beam: MeshInstance3D
+var _pool: MeshInstance3D
+var _curve: Curve3D
+var _race: Node
+var _aim := Vector3.ZERO
+var _target := Vector3.ZERO
+var _aim_t := 0.0
+var _energy := 0.0
+static var _beam_mat: ShaderMaterial
+static var _pool_mat: ShaderMaterial
 
 
 static func place(c: Node3D, xf: Transform3D, opts := {}) -> void:
@@ -60,6 +71,11 @@ static func place(c: Node3D, xf: Transform3D, opts := {}) -> void:
 			return
 		h._s = randf() * h.path.get_baked_length()
 		h._build_heli(int(opts.get("livery", 0)))
+		var w := Weather.current()
+		if OS.get_cmdline_user_args().has("--heli_near"): # debug: start over the grid
+			h._s = h.path.get_closest_offset(Gx.centre(c, 0.0))
+		if GxCamp._b(opts.get("searchlight", true)) and not GxLive.off() and (GxLive.dark() or (w and w.cycle)):
+			h._build_searchlight(c)
 	if GxCamp._b(opts.get("sound", true)) and not OS.get_cmdline_user_args().has("--no-heli-sound"):
 		h._audio = AudioStreamPlayer3D.new()
 		h._audio.bus = &"Ambience"
@@ -154,6 +170,8 @@ func _process(delta: float) -> void:
 		var b := Basis.looking_at(dir, Vector3.UP)
 		b = b * Basis(Vector3.FORWARD, -_roll) * Basis(Vector3.RIGHT, -0.09) # bank, nose down
 		transform = Transform3D(b, p)
+		if _beam:
+			_searchlight(delta)
 	if _audio and not _audio.playing and _banks.has(_kind):
 		_audio.stream = _banks[_kind]
 		_audio.play(randf() * LOOP_S)
@@ -171,6 +189,118 @@ func _process(delta: float) -> void:
 			wav.loop_end = int(RATE * LOOP_S)
 			_banks[_kind] = wav
 			_jobs.erase(_kind)
+
+
+# ---------------------------------------------------------------- searchlight
+
+const BEAM_R := 5.0 ## radius of the beam where it meets the ground (m)
+
+
+func _build_searchlight(c: Node3D) -> void:
+	_curve = Gx.curve(c)
+	if _beam_mat == null:
+		var sh := Shader.new()
+		sh.code = """
+shader_type spatial;
+render_mode unshaded, blend_add, depth_draw_never, cull_disabled, fog_disabled, shadows_disabled;
+uniform float energy = 0.0;
+uniform bool pool = false;
+varying float along;
+void vertex() {
+	along = UV.y;
+}
+void fragment() {
+	float a;
+	if (pool) {
+		float r = length(UV - 0.5) * 2.0;
+		a = smoothstep(1.0, 0.2, r) * 0.55;
+	} else {
+		float face = abs(dot(normalize(NORMAL), normalize(VIEW))); // soft edges, bright core
+		a = pow(face, 2.0) * (1.0 - along * 0.75) * smoothstep(0.0, 0.05, along) * 0.11;
+	}
+	ALBEDO = vec3(1.0, 0.96, 0.86) * a * energy;
+}
+"""
+		_beam_mat = ShaderMaterial.new()
+		_beam_mat.shader = sh
+		_pool_mat = ShaderMaterial.new()
+		_pool_mat.shader = sh
+		_pool_mat.set_shader_parameter("pool", true)
+	# unit cone: apex at the origin, 1 m long down -z, radius 1 at the far end
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var n := 16
+	for i in n:
+		var a0 := TAU * i / n
+		var a1 := TAU * (i + 1) / n
+		var e0 := Vector3(cos(a0), sin(a0), -1.0)
+		var e1 := Vector3(cos(a1), sin(a1), -1.0)
+		for v: Vector3 in [Vector3.ZERO, e0, e1]:
+			st.set_normal(Vector3(v.x, v.y, 0.3).normalized() if v != Vector3.ZERO else Vector3(cos((a0 + a1) * 0.5), sin((a0 + a1) * 0.5), 0.3).normalized())
+			st.set_uv(Vector2(0.0, -v.z))
+			st.add_vertex(v)
+	_beam = MeshInstance3D.new()
+	_beam.name = "Searchlight"
+	_beam.mesh = st.commit()
+	_beam.material_override = _beam_mat
+	_beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_beam.top_level = true
+	_beam.extra_cull_margin = 400.0 # the mesh is unit size, stretched by the transform
+	add_child(_beam)
+	var q := QuadMesh.new()
+	q.size = Vector2(BEAM_R * 2.6, BEAM_R * 2.6)
+	q.orientation = PlaneMesh.FACE_Y
+	_pool = MeshInstance3D.new()
+	_pool.name = "SearchlightPool"
+	_pool.mesh = q
+	_pool.material_override = _pool_mat
+	_pool.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_pool.top_level = true
+	add_child(_pool)
+
+
+## Every frame while flying: move the beam with the ship (one transform each);
+## at 4 Hz pick the target: the leader if within 350 m, else sweep the track below.
+func _searchlight(dt: float) -> void:
+	_aim_t -= dt
+	if _aim_t <= 0.0:
+		_aim_t = 0.25
+		var want := 1.0 if GxLive.dark() else 0.0
+		_energy = want if _energy < 0.0 else _energy
+		_energy = move_toward(_energy, want, 0.1)
+		_beam.visible = _energy > 0.01
+		_pool.visible = _beam.visible
+		if not _beam.visible:
+			return
+		_beam_mat.set_shader_parameter("energy", _energy)
+		_pool_mat.set_shader_parameter("energy", _energy)
+		if _race == null:
+			_race = GxLive.race(self)
+		var lead = GxLive.leader(_race)
+		var here := position
+		var tgt := Vector3.INF
+		if lead and lead.car and is_instance_valid(lead.car):
+			var lp: Vector3 = (get_parent() as Node3D).to_local(lead.car.global_position)
+			if Vector2(lp.x - here.x, lp.z - here.z).length() < 350.0:
+				tgt = lp
+		if tgt == Vector3.INF and _curve:
+			tgt = _curve.get_closest_point(here)
+			tgt += Vector3(sin(_t * 0.45), 0, cos(_t * 0.31)) * 18.0 # searching
+		_target = tgt
+		if _aim == Vector3.ZERO:
+			_aim = tgt
+	if not _beam.visible:
+		return
+	_aim = _aim.lerp(_target, clampf(dt * 1.6, 0.0, 1.0))
+	var src := global_transform * Vector3(0, 0.3, -2.2) # under the nose
+	var dst: Vector3 = (get_parent() as Node3D).global_transform * _aim
+	var d := dst - src
+	var l := d.length()
+	if l < 1.0:
+		return
+	var b := Basis.looking_at(d / l, Vector3.UP if absf(d.y) < l * 0.99 else Vector3.FORWARD)
+	_beam.global_transform = Transform3D(b.scaled_local(Vector3(BEAM_R, BEAM_R, l)), src)
+	_pool.global_transform = Transform3D(Basis(), dst + Vector3.UP * 0.25)
 
 
 # ---------------------------------------------------------------- sound

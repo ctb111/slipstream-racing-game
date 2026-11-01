@@ -186,6 +186,7 @@ static func dress(c: Node3D) -> void:
 	if dbg:
 		print("DRESS kiefernring lap ", lap, " runs ", runs)
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- main straight (offset 0 = start line; the straight runs on past it)
 	var main_end := 0.0
 	for s in runs:
@@ -211,6 +212,7 @@ static func dress(c: Node3D) -> void:
 	for at: float in [28.0, 52.0]:
 		_place("gx_road_text", c, Gx.road_frame(c, at), {kind = "player" if at < 30.0 else "mixed"})
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- drive-through barn at the end of the main straight (the lap's only
 	#      long straight), inflatable arch on the straightest bit of the back half
 	var barn_len := 30.0
@@ -225,6 +227,7 @@ static func dress(c: Node3D) -> void:
 		used.append(arch_at)
 		Gx.reserve(c, Gx.centre(c, arch_at), 14.0)
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- corners: WRC banks outside, photographers inside, messages in the braking zone
 	var sheets := ["f_lind", "f_hopp", "f_novak", "f_duval", "f_rossi", ""]
 	var n_banks := 0
@@ -249,6 +252,7 @@ static func dress(c: Node3D) -> void:
 			_place("gx_billboard", c, Gx.frame(c, along - 45.0, -turn, rail_lat(c, along - 45.0, -turn)), {kind = "sign", sign = "chevron", count = 3})
 		n_banks += 1
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- graffiti on a retaining wall along a back straight
 	for s in runs:
 		var mid: float = (s.from + s.to) * 0.5
@@ -256,6 +260,7 @@ static func dress(c: Node3D) -> void:
 			_place("gx_graffiti", c, Gx.frame(c, mid, L, rail_lat(c, mid, L)), {kind = "retaining", length = 28.0, height = 3.2})
 			break
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- billboards, fun signs
 	var bb := 0
 	for s in runs:
@@ -268,6 +273,7 @@ static func dress(c: Node3D) -> void:
 			bb += 1
 	_place("gx_billboard", c, Gx.frame(c, 110.0, R, 7.0), {kind = "sign", sign = "fans"})
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- forest: camps, parked cars, log yard, high seats, fire lookout tower
 	var camps := 0
 	for k in 40:
@@ -296,6 +302,7 @@ static func dress(c: Node3D) -> void:
 			if Gx.clear_of_road(c, f.origin, 15.0) and not reserved(c, f.origin, 3.0):
 				lm.high_seat(c, f)
 	_lookout_tower(c, rng)
+	await Gx.breath(c) # let the loading screen draw
 	# wooden telegraph poles with sagging wires across the back of the lap
 	if arch_at >= 0.0:
 		_place("gx_power", c, Gx.road_frame(c, fposmod(arch_at + 420.0, lap)), {kind = "poles", route = "cross"})

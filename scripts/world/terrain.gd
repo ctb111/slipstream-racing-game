@@ -10,6 +10,7 @@ const N := 513 ## heightmap samples per side (2^k + 1 keeps Jolt's height field 
 const FLAT := 16.0 ## legacy: metres beyond the road edge kept at road level (now per sample, see carve)
 const BLEND := 60.0 ## legacy
 const CHUNKS := 8
+const RENDER_STRIDE := 2 ## build_nodes draws every 2nd sample (see surface_at)
 const BEHIND_RAIL := 3.5 ## flat ground kept behind the guardrail before a bank may rise
 const CUT_BLEND := 34.0 ## land higher than the road comes in over this (cuttings)
 const FILL_BLEND := 55.0 ## land lower than the road falls away over this (embankments)
@@ -468,6 +469,29 @@ func height_at(x: float, z: float) -> float:
 	return lerpf(lerpf(h00, h10, tx), lerpf(h01, h11, tx), tz)
 
 
+## Height of the DRAWN ground: build_nodes renders every RENDER_STRIDE-th sample,
+## each quad split along its (0,0)-(1,1) diagonal. On banks and dips that
+## surface is up to ~1 m off height_at(), so things that must stand ON the
+## visible ground (people, parked cars, props) use this one.
+func surface_at(x: float, z: float) -> float:
+	var g := cell * RENDER_STRIDE
+	var fx := clampf((x - origin.x) / g, 0.0, (N - 1) / RENDER_STRIDE - 0.001)
+	var fz := clampf((z - origin.y) / g, 0.0, (N - 1) / RENDER_STRIDE - 0.001)
+	var x0 := int(fx)
+	var z0 := int(fz)
+	var u := fx - x0
+	var v := fz - z0
+	x0 *= RENDER_STRIDE
+	z0 *= RENDER_STRIDE
+	var h00 := heights[z0 * N + x0]
+	var h11 := heights[(z0 + RENDER_STRIDE) * N + x0 + RENDER_STRIDE]
+	if u >= v:
+		var h10 := heights[z0 * N + x0 + RENDER_STRIDE]
+		return h00 + u * (h10 - h00) + v * (h11 - h10)
+	var h01 := heights[(z0 + RENDER_STRIDE) * N + x0]
+	return h00 + v * (h01 - h00) + u * (h11 - h01)
+
+
 func build_nodes(parent: Node3D, mat: Material, grip: float, drag: float) -> void:
 	var body := StaticBody3D.new()
 	body.name = "Terrain"
@@ -486,7 +510,7 @@ func build_nodes(parent: Node3D, mat: Material, grip: float, drag: float) -> voi
 	parent.add_child(body)
 
 	# Render at every second sample, split into chunks so off-screen parts cull.
-	var stride := 2
+	var stride := RENDER_STRIDE
 	var per := (N - 1) / CHUNKS
 	var side := per / stride + 1
 	for cz in CHUNKS:

@@ -245,6 +245,8 @@ class Filler:
 		var mid := Gx.frame(c, (a0 + a1) * 0.5, side, n0 + depth * 0.5).origin
 		if forest_at(mid) > 0.8 and rng.randf() < 0.7:
 			return # deep in the forest: nothing would show
+		if rng.randf() < 0.8 * GxCorridor.boost_at(c, Gx.frame(c, (a0 + a1) * 0.5, side, 14.0).origin):
+			return # behind the corridor tree wall (gx_corridor.gd): nothing would show
 		# front boundary (gate gap somewhere)
 		var gate := rng.randf_range(a0 + 15.0, a1 - 15.0)
 		var pts: Array = []
@@ -302,6 +304,8 @@ class Filler:
 			var q := Gx.frame(c, a, side, lat).origin
 			if forest_at(q) > 0.35 or not ok_at(q, 30.0, 10.0):
 				continue
+			if rng.randf() < 0.6 * GxCorridor.boost_at(c, Gx.frame(c, a, side, 14.0).origin):
+				continue # hidden behind the corridor tree wall
 			var n := rng.randi_range(5, 14)
 			var r := sqrt(float(n)) * 4.5
 			for k in n:

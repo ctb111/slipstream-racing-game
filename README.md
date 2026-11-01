@@ -68,7 +68,6 @@ friends join by the host's public IP.
 | Handbrake (start a drift) | Space | A |
 | Shift up / down | E / Q | RB / LB |
 | Auto / manual gearbox | T | |
-| Driving assists on/off | X | |
 | Camera (chase / cockpit / far / bumper / bonnet / roof / TV) | C | Y |
 | Look back / left / right | B / Z / V | RS click |
 | Reset to track | R | View (Back) |

@@ -84,8 +84,12 @@ static func place(c: Node3D, xf: Transform3D, opts := {}) -> void:
 	if opts.get("fence", true):
 		_fence(c, holder, g, xf, W, gy, rng, labels)
 	if opts.get("crane", true):
-		_tower_crane(g, Vector3(rng.randf_range(-W * 0.3, W * 0.3), 0, D + 12.0), gy, rng)
+		_tower_crane(holder, g, xf, Vector3(rng.randf_range(-W * 0.3, W * 0.3), 0, D + 12.0), gy, rng)
 	GxProps.commit(g, holder, "GxInd", 1500.0, true)
+
+	# Dynamic harbour life (tugboat cruising along waterfront on harbour / coast circuits)
+	if ResourceLoader.exists("res://scripts/track/gimmicks/gx_harbour_life.gd"):
+		load("res://scripts/track/gimmicks/gx_harbour_life.gd").maybe_place(c)
 	for lb: Array in labels:
 		var l := Label3D.new()
 		l.text = lb[0]
@@ -292,7 +296,7 @@ static func _fence(c: Node3D, holder: Node3D, g: GxGeo, xf: Transform3D, W: floa
 
 
 # ------------------------------------------------------------- tower crane
-static func _tower_crane(g: GxGeo, base: Vector3, gy: Callable, rng: RandomNumberGenerator) -> void:
+static func _tower_crane(holder: Node3D, g: GxGeo, xf: Transform3D, base: Vector3, gy: Callable, rng: RandomNumberGenerator) -> void:
 	var y0: float = gy.call(base.x, base.z)
 	var mast_h := rng.randf_range(38.0, 50.0)
 	var m := 1.0 # half width of the lattice mast
@@ -312,62 +316,14 @@ static func _tower_crane(g: GxGeo, base: Vector3, gy: Callable, rng: RandomNumbe
 			var b: Vector3 = corners[(i + 1) % 4]
 			g.beam("painted_metal", o + a + Vector3(0, ya, 0), o + b + Vector3(0, ya + seg, 0), 0.07)
 			g.beam("painted_metal", o + a + Vector3(0, ya, 0), o + b + Vector3(0, ya, 0), 0.07)
-	# slewing unit, cab, jib (towards -z = over the yard, angled), counter-jib, A-frame
+
+	# Slewing superstructure (cab, jib, counter-jib, A-frame, pendants, trolley)
 	var top := o + Vector3(0, mast_h, 0)
 	var yaw := rng.randf_range(-1.2, 1.2) + PI * 0.5
-	var jd := Vector3(cos(yaw), 0, -sin(yaw))
-	var side := jd.cross(Vector3.UP).normalized()
-	g.col = Color(0.25, 0.25, 0.25)
-	g.box("painted_metal", top + Vector3(0, 0.6, 0), Vector3(2.4, 1.2, 2.4), 0.05)
-	g.col = Color(0.9, 0.9, 0.88)
-	g.box("painted_metal", top + jd * 1.6 + side * 1.6 + Vector3(0, 1.4, 0), Vector3(1.8, 2.0, 1.6), 0.08) # cab
 	var jib_len := rng.randf_range(40.0, 55.0)
 	var cj := 14.0
-	g.col = paint
-	var jt := top + Vector3(0, 1.4, 0)
-	# triangular lattice jib: two bottom chords + top chord
-	var pts_b1 := [jt + side * 0.7, jt + side * 0.7 + jd * jib_len]
-	var pts_b2 := [jt - side * 0.7, jt - side * 0.7 + jd * jib_len]
-	var pts_t := [jt + Vector3(0, 1.4, 0), jt + Vector3(0, 0.6, 0) + jd * jib_len]
-	g.beam("painted_metal", pts_b1[0], pts_b1[1], 0.14)
-	g.beam("painted_metal", pts_b2[0], pts_b2[1], 0.14)
-	g.beam("painted_metal", pts_t[0], pts_t[1], 0.12)
-	var nj := int(jib_len / 2.5)
-	for k in nj:
-		var f0 := float(k) / nj
-		var f1 := float(k + 1) / nj
-		var b1a: Vector3 = pts_b1[0].lerp(pts_b1[1], f0)
-		var b2a: Vector3 = pts_b2[0].lerp(pts_b2[1], f0)
-		var ta: Vector3 = pts_t[0].lerp(pts_t[1], f0)
-		var b1b: Vector3 = pts_b1[0].lerp(pts_b1[1], f1)
-		var b2b: Vector3 = pts_b2[0].lerp(pts_b2[1], f1)
-		g.beam("painted_metal", b1a, tb(pts_t, f1), 0.05)
-		g.beam("painted_metal", b2a, tb(pts_t, f1), 0.05)
-		g.beam("painted_metal", b1a, b2a, 0.05)
-		g.beam("painted_metal", ta, b1b, 0.05)
-		g.beam("painted_metal", ta, b2b, 0.05)
-	# counter-jib with concrete blocks
-	g.beam("painted_metal", jt + side * 0.7, jt + side * 0.7 - jd * cj, 0.14)
-	g.beam("painted_metal", jt - side * 0.7, jt - side * 0.7 - jd * cj, 0.14)
-	for k in int(cj / 2.0):
-		g.beam("painted_metal", jt + side * 0.7 - jd * (k * 2.0), jt - side * 0.7 - jd * (k * 2.0 + 2.0), 0.05)
-	g.col = Color(0.6, 0.6, 0.58)
-	g.box("concrete", jt - jd * (cj - 1.8) + Vector3(0, -0.6, 0), Vector3(2.2, 2.4, 2.0), 0.05, Basis(Vector3.UP, yaw))
-	# A-frame and pendants
-	g.col = paint
-	var apex := jt + Vector3(0, 7.0, 0)
-	g.beam("painted_metal", jt + side * 0.7, apex, 0.12)
-	g.beam("painted_metal", jt - side * 0.7, apex, 0.12)
-	g.col = Color(0.2, 0.2, 0.2)
-	g.bar("steel", apex, jt + Vector3(0, 0.8, 0) + jd * jib_len * 0.7, 0.03, 4)
-	g.bar("steel", apex, jt - jd * cj, 0.03, 4)
-	# trolley + hook line
-	var tp := jt + jd * jib_len * rng.randf_range(0.35, 0.8)
-	g.box("painted_metal", tp, Vector3(1.2, 0.4, 1.2))
-	var hook_y := rng.randf_range(8.0, mast_h - 6.0)
-	g.bar("steel", tp, Vector3(tp.x, o.y + hook_y, tp.z), 0.02, 3)
-	g.col = Color(0.9, 0.7, 0.05)
-	g.box("painted_metal", Vector3(tp.x, o.y + hook_y - 0.4, tp.z), Vector3(0.6, 0.8, 0.4), 0.05)
+	if ResourceLoader.exists("res://scripts/track/gimmicks/gx_crane_jib.gd"):
+		load("res://scripts/track/gimmicks/gx_crane_jib.gd").build(holder, xf, top, yaw, paint, jib_len, cj, rng)
 
 
 static func tb(pts: Array, f: float) -> Vector3:

@@ -172,6 +172,9 @@ const FOREST_MIX := {
 ## Forest LOD cell (m): near MultiMeshes and far merged meshes per cell, far
 ## meshes merged again per 3x3 cells further out (see build_forest).
 const FOREST_CELL := 100.0
+const WALL_GRID := 10.0 ## GxCorridor.GRID
+## Deep-forest trees dropped per corridor wall tree (the wall hides most of them).
+const WALL_TRADE := 2.5
 const DEFAULT_MIX := [0.55, 0.15, 0.13, 0.07, 0.1]
 ## Age classes per species: variant heights in metres (instances are scaled a
 ## further 0.85..1.15) and how common each is. Forest edges get the younger
@@ -273,7 +276,10 @@ static func build_forest(parent: Node3D, avoid: Curve3D, keep_clear: float, area
 	var belt_on := false
 	var belt_len := avoid.get_baked_length()
 	if def is Dictionary:
-		belt_on = _edge_belt(def, avoid, keep_clear, terrain, zones, mix, by_species, variants, cells, colliders, trunk_shapes, rng)
+		var wall := [0] # corridor tree-wall trees placed (gx_corridor.gd): taken off the deep forest below
+		belt_on = _edge_belt(def, avoid, keep_clear, terrain, zones, mix, by_species, variants, cells, colliders, trunk_shapes, rng,
+			parent.get_meta("corridor_trees", {}), wall)
+		count = maxi(count - int(wall[0] * WALL_TRADE), count / 3)
 	while placed < count and tries < count * 20:
 		tries += 1
 		var p := Vector3(rng.randf_range(area.position.x, area.end.x), 0, rng.randf_range(area.position.y, area.end.y))
@@ -299,7 +305,7 @@ static func build_forest(parent: Node3D, avoid: Curve3D, keep_clear: float, area
 			if Vector2(p.x - near.x, p.z - near.z).length() < keep_clear:
 				continue
 		if terrain:
-			p.y = terrain.height_at(p.x, p.z) - 0.2
+			p.y = terrain.surface_at(p.x, p.z) - 0.2
 		if Vegetation.in_zone(zones, p, 20.0):
 			continue
 		# Pick a species: broadleaf trees cluster in stands, mostly along forest edges.
@@ -481,10 +487,12 @@ static func build_forest(parent: Node3D, avoid: Curve3D, keep_clear: float, area
 ## harbour/coast/alpine), never inside run-off, exclusion zones or another
 ## stretch of road.
 static func _edge_belt(def: Dictionary, avoid: Curve3D, keep_clear: float, terrain: Terrain, zones: Dictionary, mix: Array,
-		by_species: Array, variants: Array, cells: Dictionary, colliders: StaticBody3D, trunk_shapes: Array, rng: RandomNumberGenerator) -> bool:
+		by_species: Array, variants: Array, cells: Dictionary, colliders: StaticBody3D, trunk_shapes: Array, rng: RandomNumberGenerator,
+		wall: Dictionary = {}, wall_out: Array = [0]) -> bool:
 	if OS.get_cmdline_user_args().has("--trees_old") or OS.has_environment("BELT_OFF") or by_species.size() < 8:
 		return false
-	if def.get("street", false) or def.get("theme", "") in ["town", "harbour", "coast"]:
+	var base: bool = not (def.get("street", false) or def.get("theme", "") in ["town", "harbour", "coast"])
+	if not base and wall.is_empty():
 		return false
 	var gaps := FastNoiseLite.new() # clearings and thicker patches along the belt
 	gaps.seed = 99
@@ -513,10 +521,23 @@ static func _edge_belt(def: Dictionary, avoid: Curve3D, keep_clear: float, terra
 			var g := gaps.get_noise_2d(p0.x + side * 50.0, p0.z) * 0.5 + 0.5 # 0 clearing .. 1 thicket
 			# [kind, lateral]: kind 0 tree, 1 bush
 			var items: Array = []
-			if rng.randf() < (0.14 if med else 0.24) * smoothstep(0.15, 0.5, g):
+			if base and rng.randf() < (0.14 if med else 0.24) * smoothstep(0.15, 0.5, g):
 				items.append([0, rng.randf_range(rail + 5.5, keep_clear + 4.0)])
-			if rng.randf() < (0.75 if med else 0.6) * smoothstep(0.05, 0.35, g):
+			if base and rng.randf() < (0.75 if med else 0.6) * smoothstep(0.05, 0.35, g):
 				items.append([1, rail + 2.5 + pow(rng.randf(), 1.6) * 13.0])
+			# Corridor tree wall (gx_corridor.gd): a close front row of middle-aged
+			# trees, a taller row behind, undergrowth at their feet.
+			var wb := 0.0
+			if not wall.is_empty():
+				var wp := p0 + right * side * (rail + 13.0)
+				wb = float(wall.get(Vector2i(floori(wp.x / WALL_GRID), floori(wp.z / WALL_GRID)), 0.0)) * (0.7 + 0.3 * g)
+			if wb > 0.0:
+				if rng.randf() < 0.32 * wb:
+					items.append([2, rng.randf_range(rail + 6.0, rail + 13.0)])
+				if rng.randf() < 0.2 * wb:
+					items.append([3, rng.randf_range(rail + 13.0, rail + 34.0)])
+				if rng.randf() < 0.22 * wb:
+					items.append([1, rng.randf_range(rail + 3.5, rail + 9.0)])
 			for it: Array in items:
 				var lat: float = it[1]
 				var p := p0 + right * side * lat + t * rng.randf_range(-1.0, 1.0)
@@ -526,10 +547,10 @@ static func _edge_belt(def: Dictionary, avoid: Curve3D, keep_clear: float, terra
 				if Vegetation.in_zone(zones, p, 20.0):
 					continue
 				if terrain:
-					p.y = terrain.height_at(p.x, p.z) - 0.2
+					p.y = terrain.surface_at(p.x, p.z) - 0.2
 					# Nothing grows on rock cuttings (steeper than ~45 degrees).
-					var gx := terrain.height_at(p.x + 1.5, p.z) - terrain.height_at(p.x - 1.5, p.z)
-					var gz := terrain.height_at(p.x, p.z + 1.5) - terrain.height_at(p.x, p.z - 1.5)
+					var gx := terrain.surface_at(p.x + 1.5, p.z) - terrain.surface_at(p.x - 1.5, p.z)
+					var gz := terrain.surface_at(p.x, p.z + 1.5) - terrain.surface_at(p.x, p.z - 1.5)
 					if gx * gx + gz * gz > 9.0:
 						continue
 				var vi: int
@@ -552,6 +573,9 @@ static func _edge_belt(def: Dictionary, avoid: Curve3D, keep_clear: float, terra
 					# young at the barrier, middle-aged towards the forest
 					var f := clampf((lat - rail) / maxf(keep_clear - rail, 1.0), 0.0, 1.0)
 					var age := clampi(int(f * 1.6 + rng.randf() * 1.3), 0, mini(2, ages.size() - 1))
+					if it[0] >= 2: # wall rows: tall enough to close the view
+						age = clampi(int(it[0]) - 1 + rng.randi() % 2, 0, ages.size() - 1)
+						wall_out[0] += 1
 					vi = ages[age]
 					n_trees += 1
 				var xf := Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s, s * rng.randf_range(0.9, 1.1), s)), p)

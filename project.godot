@@ -62,6 +62,34 @@ wx_wind={
 "type": "float",
 "value": 0.0
 }
+crowd_hot0={
+"type": "vec4",
+"value": Vector4(0, -1000, 0, 0)
+}
+crowd_hot1={
+"type": "vec4",
+"value": Vector4(0, -1000, 0, 0)
+}
+crowd_hot2={
+"type": "vec4",
+"value": Vector4(0, -1000, 0, 0)
+}
+crowd_hot3={
+"type": "vec4",
+"value": Vector4(0, -1000, 0, 0)
+}
+marshal_yellow0={
+"type": "vec4",
+"value": Vector4(0, -1000, 0, 0)
+}
+marshal_yellow1={
+"type": "vec4",
+"value": Vector4(0, -1000, 0, 0)
+}
+marshal_chequer={
+"type": "vec4",
+"value": Vector4(0, -1000, 0, 0)
+}
 
 [editor]
 

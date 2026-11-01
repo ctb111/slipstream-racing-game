@@ -23,7 +23,7 @@ are no `.tscn` UI scenes.
 
 | File | class_name | What it is | Main entry points |
 |---|---|---|---|
-| `loading_screen.gd` | `LoadingScreen` (`CanvasLayer`) | Shown by `race.gd` while the circuit builds: track name, blurb and outline (drawn in amber as it loads), conditions, a rotating tip, a time-based progress bar that learns each track's step timings (`user://load_profile.cfg`). | `LoadingScreen.new(def, cond, laps, title)`, `set_progress(f, label)`, `hold(...)`, `finish()` |
+| `loading_screen.gd` | `LoadingScreen` (`CanvasLayer`) | Shown by `race.gd` while the circuit builds: track name, blurb and outline (drawn in amber as it loads), conditions, a tip, and a faked progress bar: it glides towards 99 % on its own clock (frame time clamped, so build freezes never make it jump), waits there until the race is ready, then fills and fades. `--loadhitch` prints each frozen frame. | `LoadingScreen.new(def, cond, laps, title)`, `set_progress(f, label)`, `hold(...)`, `finish()` |
 
 ### HUD
 

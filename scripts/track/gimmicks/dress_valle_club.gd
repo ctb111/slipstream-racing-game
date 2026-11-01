@@ -33,21 +33,26 @@ static func dress(c: Node3D) -> void:
 	var R := Gx.RIGHT
 	var L := Gx.LEFT
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- landmark: the wine estate on the best slope
 	load(LM).estate(c)
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- drive-under: local railway bridge over the end of the main straight
 	if _piece("gx_overpass"):
 		_place("gx_overpass", c, Gx.road_frame(c, 118.0), {kind = "rail", banner = "b_valter", graffiti = false})
 		Gx.reserve(c, Gx.centre(c, 118.0), 22.0)
 	_place("gx_graffiti", c, Gx.frame(c, 95.0, L, 5.0), {kind = "retaining", length = 18.0, height = 3.0})
 	_place("gx_graffiti", c, Gx.frame(c, 140.0, R, 5.0), {length = 9.0})
+	await Gx.breath(c) # let the loading screen draw
 	# ---- the village gate (ochre render, clock tower) on the run to the last corners
 	_place("gx_arch", c, Gx.road_frame(c, 1104.0), {kind = "gate", material = "plaster", walls = 10.0})
+	await Gx.breath(c) # let the loading screen draw
 	# ---- sponsor structures
 	_place("gx_sponsor_arch", c, Gx.road_frame(c, 30.0), {kind = "gantry", brand = "valter", brand2 = "marzelli"})
 	_place("gx_sponsor_arch", c, Gx.road_frame(c, 780.0), {kind = "inflatable", brand = "marzelli"})
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- fan banks at the hairpins, photographers on the inside
 	if _piece("gx_fans"):
 		var fans := _piece("gx_fans")
@@ -65,22 +70,26 @@ static func dress(c: Node3D) -> void:
 		fans.place(c, Gx.frame(c, 40.0, R, 10.0), {kind = "flags", count = 6, keys = flags})
 		fans.place(c, Gx.frame(c, 820.0, R, 9.0), {kind = "flags", count = 4, keys = flags})
 
+	await Gx.breath(c) # let the loading screen draw
 	# ---- painted messages in the braking zones (Italian fans)
 	_place("gx_road_text", c, Gx.road_frame(c, 152.0), {text = "FORZA!", color = "yellow"})
 	_place("gx_road_text", c, Gx.road_frame(c, 462.0), {kind = "player"})
 	_place("gx_road_text", c, Gx.road_frame(c, 640.0), {text = "VAI VAI VAI"})
 	_place("gx_road_text", c, Gx.road_frame(c, 852.0), {kind = "name"})
 	_place("gx_road_text", c, Gx.road_frame(c, 1124.0), {kind = "heart"})
+	await Gx.breath(c) # let the loading screen draw
 	# ---- billboards and signs
 	for b: Array in [[62.0, L, "MARZELLI"], [330.0, R, "VALTER OIL"], [940.0, L, "AUREL WATCHES"]]:
 		_place("gx_billboard", c, Gx.frame(c, b[0], b[1], 12.0), {brand = b[2]})
 	_place("gx_billboard", c, Gx.frame(c, 1060.0, R, 2.0), {kind = "sign", sign = "village", speed = 50})
 	_place("gx_billboard", c, Gx.frame(c, 192.0, -_turn_at(c, 196.0), 1.5), {kind = "sign", sign = "chevron", count = 4})
+	await Gx.breath(c) # let the loading screen draw
 	# ---- fan camp + parked cars on the outside of the back section
 	var f := Gx.frame(c, 600.0, L, 9.0)
 	if Gx.clear_of_road(c, f.origin, 6.0):
 		pass # large camp dropped for the frame budget
 	_place("gx_parked_cars", c, Gx.frame(c, 990.0, L, 7.0), {count = 7, layout = "field"})
+	await Gx.breath(c) # let the loading screen draw
 	# ---- density pass (cheap pieces only: this track is tight on frame time)
 	# lots of graffiti: the valley kids' walls
 	_place("gx_graffiti", c, Gx.frame(c, 250.0, L, 5.0), {length = 9.0})
@@ -88,25 +97,31 @@ static func dress(c: Node3D) -> void:
 	_place("gx_graffiti", c, Gx.frame(c, 560.0, R, 5.0), {length = 8.0})
 	_place("gx_graffiti", c, Gx.frame(c, 980.0, R, 5.0), {kind = "pier", width = 1.5, height = 4.5})
 	_place("gx_graffiti", c, Gx.frame(c, 1210.0, L, 5.0), {length = 10.0})
+	await Gx.breath(c) # let the loading screen draw
 	# big b_valter banner run on the start straight
 	if _piece("gx_fans"):
 		_piece("gx_fans").place(c, Gx.frame(c, 80.0, R, 4.0), {kind = "banners", length = 90.0, keys = ["b_valter", "b_valter", "b_marzelli", "b_press"]})
+	await Gx.breath(c) # let the loading screen draw
 	# painted messages on the crest and in the remaining braking zones
 	_place("gx_road_text", c, Gx.road_frame(c, 335.0), {kind = "gogo"})
 	_place("gx_road_text", c, Gx.road_frame(c, 272.0), {text = "DAI!", color = "yellow"})
 	_place("gx_road_text", c, Gx.road_frame(c, 720.0), {kind = "allez"})
 	_place("gx_road_text", c, Gx.road_frame(c, 560.0), {kind = "arrows"})
+	await Gx.breath(c) # let the loading screen draw
 	# signs
 	_place("gx_billboard", c, Gx.frame(c, 320.0, L, 1.5), {kind = "sign", sign = "crest"})
 	_place("gx_billboard", c, Gx.frame(c, 480.0, R, 1.5), {kind = "sign", sign = "fans"})
 	_place("gx_billboard", c, Gx.frame(c, 700.0, R, 12.0), {brand = "HELIOS BENZIN"})
+	await Gx.breath(c) # let the loading screen draw
 	# a sponsor water tower on the hill, seen from all round the lap
 	# wooden power poles along the back section
 	_place("gx_power", c, Gx.road_frame(c, 620.0), {kind = "poles", route = "along", side = L, lateral = 10.0, reach = 120.0})
 
+	await Gx.breath(c) # let the loading screen draw
 	# motorway sign bridge mid-straight and two turbines on the far hill (gxstruct)
 	_place("gx_sign_gantry", c, Gx.road_frame(c, 72.0), {boards = [3, 1]})
 	_place("gx_turbine", c, Gx.frame(c, 900.0, L, 210.0), {count = 2, spacing = 170.0})
+	await Gx.breath(c) # let the loading screen draw
 	# ---- TV helicopter (no drone here: perf budget)
 	_place("gx_heli", c, Transform3D.IDENTITY, {livery = 2})
 

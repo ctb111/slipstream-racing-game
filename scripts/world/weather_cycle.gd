@@ -243,7 +243,7 @@ func apply(dt: float) -> void:
 	env.fog_density = lerpf(float(base.fog), float(heavy.fog), sm * sm) * (1.0 + w.rain * 0.3)
 	env.fog_light_color = (base.fog_color as Color).lerp(heavy.fog_color, sm)
 	env.fog_sky_affect = lerpf(float(base.sky_fog), float(heavy.sky_fog), sm)
-	env.adjustment_saturation = lerpf(float(base.saturation), float(heavy.saturation), sm)
+	env.adjustment_saturation = lerpf(float(base.saturation), float(heavy.saturation), sm) + Weather.SAT_BOOST
 	if not w.night:
 		env.glow_intensity = lerpf(0.25, 0.45, sm)
 	# Standing water mirrors the cars and sky: SSR only once the track is wet

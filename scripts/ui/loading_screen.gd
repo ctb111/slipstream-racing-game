@@ -7,6 +7,7 @@ extends CanvasLayer
 ## race.gd creates it first thing, feeds it progress, then calls finish().
 
 const TIP_EVERY := 5.5
+const FILL_SECS := 0.3 ## the last bit of the bar once loaded
 const FADE_IN := 0.35
 const FADE_OUT := 0.5
 
@@ -25,24 +26,11 @@ var _tip: Label
 var _tips: Array[String] = []
 var _tip_i := 0
 var _tip_t := 0.0
-var _shown := 0.0 ## displayed progress (eases towards _target)
-var _target := 0.0
+var _shown := 0.0 ## displayed bar fill
 var _fade: ColorRect
 var _clock := 0.0
 var _done := false
-# Time-based progress: the bar follows how long each step usually takes on
-# this track (learnt from the last load, saved in user://), so it glides even
-# though the window only redraws between build steps.
-const PROFILE := "user://load_profile.cfg"
-const DEFAULT_SECS := {"Sky and weather": 0.25, "Ground": 0.2, "Terrain": 0.8, "Tarmac and barriers": 0.45,
-	"Trackside": 0.6, "Scenery": 1.1, "Set Dressing": 0.35, "Themes": 1.2, "Grass": 0.25, "Hills": 0.1,
-	"Forest": 0.35, "Cars": 1.8, "Warming up": 0.5}
-var _expect := {} ## label -> expected seconds
-var _order: Array[String] = [] ## labels seen so far, in order
-var _done_secs := 0.0 ## expected seconds of finished steps
-var _cur := ""
-var _cur_t0 := 0.0
-var _actual := {} ## label -> measured seconds (saved for next time)
+var _cur := "" ## build step in progress (debug --loadhitch)
 
 
 func _init(t: Dictionary, cond: int, lap_count: int, title: String) -> void:
@@ -180,95 +168,38 @@ func _vignette() -> void:
 	_root.add_child(tr)
 
 
-## 0..1 overall, with the step being worked on ("Terrain"). A new label starts
-## a new step; `f` only acts as a floor.
-func set_progress(f: float, label: String) -> void:
-	_target = maxf(_target, clampf(f, 0.0, 1.0) * 0.5)
-	if label != "" and label != _cur:
-		_begin(label)
-		_step.text = ("BUILDING  " + label).to_upper()
-
-
-func _now() -> float:
-	return Time.get_ticks_msec() / 1000.0
-
-
-func _begin(label: String) -> void:
-	if _expect.is_empty():
-		_load_profile()
-	var t := _now()
-	if _cur != "":
-		_actual[_cur] = float(_actual.get(_cur, 0.0)) + (t - _cur_t0)
-		_done_secs += _secs(_cur)
-	_cur = label
-	_cur_t0 = t
-	if not _order.has(label):
-		_order.append(label)
-
-
-func _secs(label: String) -> float:
-	return float(_expect.get(label, DEFAULT_SECS.get(label, 0.25)))
-
-
-## Total expected time: every step this track ran last time (or the defaults).
-func _total() -> float:
-	var tot := 0.0
-	var seen := {}
-	for l: String in _expect:
-		tot += _secs(l)
-		seen[l] = true
-	for l: String in _order:
-		if not seen.has(l):
-			tot += _secs(l)
-	return maxf(tot, 0.5)
-
-
-func _time_progress() -> float:
-	if _cur == "":
-		return 0.0
-	# Within a step, approach (never reach) its end: no stall, no overshoot.
-	var e := _secs(_cur)
-	var k := 1.0 - exp(-(_now() - _cur_t0) / maxf(e, 0.05) * 1.6)
-	return clampf((_done_secs + e * k * 0.97) / _total(), 0.0, 0.995)
-
-
-func _load_profile() -> void:
-	var cfg := ConfigFile.new()
-	if cfg.load(PROFILE) == OK and cfg.has_section(str(track.get("id", ""))):
-		for l in cfg.get_section_keys(str(track.get("id", ""))):
-			_expect[l] = float(cfg.get_value(str(track.get("id", "")), l))
-	if _expect.is_empty():
-		_expect = DEFAULT_SECS.duplicate()
-		if not track.has("theme"):
-			_expect.erase("Themes")
-
-
-func _save_profile() -> void:
-	if _cur != "":
-		_actual[_cur] = float(_actual.get(_cur, 0.0)) + (_now() - _cur_t0)
-	var cfg := ConfigFile.new()
-	cfg.load(PROFILE)
-	var id := str(track.get("id", ""))
-	if cfg.has_section(id):
-		cfg.erase_section(id)
-	for l: String in _actual:
-		cfg.set_value(id, l, snappedf(float(_actual[l]), 0.01))
-	cfg.save(PROFILE)
+## Called by the race for each build step (the label shows; the bar is faked).
+func set_progress(_f: float, label: String) -> void:
+	if label != "":
+		_cur = label
 
 
 ## Debug: show a fixed progress (screenshots).
 func hold(f: float, label: String) -> void:
-	_target = f
 	_shown = f
+	_held = true
 	_step.text = ("BUILDING  " + label).to_upper()
 
 
 func _process(dt: float) -> void:
-	_clock += dt
-	# Follow the time-based estimate; ease so redraws after a long step glide.
-	if not _done:
-		_target = maxf(_target, _time_progress())
-	_shown = lerpf(_shown, _target, 1.0 - exp(-dt * 9.0))
+	var now_us := Time.get_ticks_usec()
+	var real_dt := (now_us - _last_us) / 1e6 if _last_us > 0 else dt
+	_last_us = now_us
+	if _log_hitch and real_dt > 0.05 and not _done: # debug --loadhitch: every frozen frame and the step before it
+		print("loadhitch %4d ms  %s" % [roundi(real_dt * 1000.0), _cur])
+	# Fake but smooth: the bar glides towards 99 % on its own clock (quick at first,
+	# slower near the end) and waits there until the race is ready, then fills and
+	# fades. dt is clamped, so a frozen build frame never makes it jump.
+	var ft := minf(dt, 1.0 / 30.0)
+	_clock += ft
+	if _held:
+		pass
+	elif not _done:
+		_shown = minf(_shown + (0.99 - _shown) * ft * 0.35, 0.99)
+	else:
+		_shown = move_toward(_shown, 1.0, ft / FILL_SECS)
+		if _shown >= 1.0 and not _faded:
+			_fade_out()
 	var w := _bar_back.size.x
 	_bar.offset_right = w * _shown
 	_pct.text = "%d%%" % roundi(_shown * 100.0)
@@ -289,12 +220,21 @@ func _process(dt: float) -> void:
 func finish() -> void:
 	if _done:
 		return
-	_save_profile()
 	_done = true
-	_target = 1.0
 	_step.text = "READY"
+
+
+var _faded := false
+var _held := false ## debug hold(): the bar stays put
+var _last_us := 0
+var _log_hitch := OS.get_cmdline_user_args().has("--loadhitch")
+
+
+## Once the bar is full: fade to the race and go away.
+func _fade_out() -> void:
+	_faded = true
 	var tw := create_tween()
-	tw.tween_interval(0.25)
+	tw.tween_interval(0.15)
 	tw.tween_property(_fade, "color:a", 1.0, 0.25).set_trans(Tween.TRANS_SINE)
 	tw.tween_callback(func():
 		for c in _root.get_children():
@@ -315,7 +255,7 @@ static func tips(cond: int) -> Array[String]:
 		"%s cycles the cameras: chase, far chase, roof and cockpit." % k.call("camera"),
 		"Off the track? %s puts you back on the racing line." % k.call("reset_car"),
 		"%s switches between the automatic and a manual gearbox (%s / %s to shift)." % [k.call("toggle_gearbox"), k.call("shift_up"), k.call("shift_down")],
-		"%s toggles the driving assists: ABS, traction control and steering help." % k.call("toggle_assists"),
+		"Driving assists (ABS, traction control, steering help) are in the race settings; turn them off for a sharper, harder car.",
 		"Gravel traps and grass slow you right down and cost grip. Kerbs are fine.",
 		"Brake in a straight line, then turn in. Trail the brake only as far as the tyres let you.",
 		"The crowd notices. Pass someone in front of a grandstand and they will let you hear it.",
